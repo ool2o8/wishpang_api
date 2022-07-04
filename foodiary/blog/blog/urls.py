@@ -15,7 +15,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from blog.blog.views import PostViewSet
+from blog.blog.views import CommentViewSet
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('post/',  PostViewSet.as_view({'get':'list', 'post':'create'})),
+    path('post/<int:pk>', PostViewSet.as_view({'get':'retrieve'})),
 ]
