@@ -131,3 +131,6 @@ dmypy.json
 #django 
 
 .sqlite3
+
+#secret_key
+secrets.json

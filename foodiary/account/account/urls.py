@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 from account.account.views import CreateUserViewset
+from account.account.views import KaKaoSignInCallBackView, KakaoGetLogin
 
 
 urlpatterns = [
@@ -24,4 +25,6 @@ urlpatterns = [
     path('api-jwt-auth/register/', CreateUserViewset.as_view({'post':'create'}), name='register'),
     path('api-jwt-auth/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api-jwt-auth/verify/', TokenVerifyView.as_view(), name='token_verify'),
+    path('kakao/login', KakaoGetLogin.as_view()),
+    path('kakao/login/callback/', KaKaoSignInCallBackView.as_view()),
 ]
