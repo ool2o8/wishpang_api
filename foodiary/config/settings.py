@@ -15,7 +15,6 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
@@ -62,14 +61,14 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 ]
 INSTALLED_APPS+=[
+     #django-rest-auth
+    'rest_framework_simplejwt.token_blacklist',
+    'rest_framework_simplejwt',
+    
     #my app
     'account',
     'blog',
     'reviews',
-
-    #django-rest-auth
-    'rest_framework_simplejwt.token_blacklist',
-    'rest_framework_simplejwt',
 
 ]
 
@@ -204,3 +203,5 @@ AUTHENTICATION_BACKENDS = (
 	# 'allauth' specific authentication methods, such as login by email
     'allauth.account.auth_backends.AuthenticationBackend',
 )
+
+SITE_ID = 1
