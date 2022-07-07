@@ -16,6 +16,13 @@ import os, json
 from django.core.exceptions import ImproperlyConfigured
 
 from django.http import JsonResponse
+from django.db import models
+from account.account.models import Profile
+from django.contrib.auth.hashers import make_password
+from rest_framework import serializers
+
+from account.account.serializer import *
+
 
 secret_file = os.path.join(r"C:\side_project\foodiary\foodiary\foodiary",'secrets.json') # secrets.json 파일 위치를 명시
 
@@ -36,6 +43,14 @@ SECRET_KEY = get_secret("SECRET_KEY")
 class CreateUserViewset(viewsets.ModelViewSet):
     queryset=User.objects.all()
     serializer_class=CreateUserSerializer
+    
+    def create(self,request):
+        serializer=CreateUserSerializer(request.POST)
+        user=User.objects.create(
+            username=request.POST.get('username'),
+            password=make_password(request.POST.get('password'))
+        )
+        return Response(serializer.data,status=status.HTTP_200_OK)
 
 
 class KakaoGetLogin(View):
@@ -55,7 +70,7 @@ class KaKaoSignInCallBackView(APIView):
         data = {
             'grant_type': 'authorization_code',
             'client_id': get_secret("KAKAO_REST_API_KEY"),
-            'redirection_uri': 'http://localhost:80/account/kakao/callback',
+            'redirection_uri': 'http://localhost:80/',
             'code': auth_code
         }
 
@@ -67,17 +82,19 @@ class KaKaoSignInCallBackView(APIView):
         user_info=user_info_response.json()
         if not User.objects.filter(username=user_info["id"]).exists():
                # 유저 정보가 없으면 회원가입 되도록 합니다.
-               user = User.objects.create(
+                user = User.objects.create(
                     username=user_info["id"],
-                    password=user_info["id"]
+                    password=make_password(user_info["id"])
                     )
+
+                profile=Profile.objects.create(user=user, nickname=user_info["properties"]["nickname"])
 
         return JsonResponse({"user_info": user_info_response.json(), "token_response": token_response.json()})
 
 class KakaoGetLogout(View):
     def get(self, request):
         REST_API_KEY = get_secret("KAKAO_REST_API_KEY")
-        REDIRECT_URI = 'http://127.0.0.1:80/account/kakao/logout/callback/'
+        REDIRECT_URI = 'http://127.0.0.1:80/'
 
         API_HOST = f'http://kauth.kakao.com/oauth/logout?client_id=${REST_API_KEY}&logout_redirect_uri=${REDIRECT_URI}'
 
