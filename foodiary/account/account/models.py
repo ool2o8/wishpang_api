@@ -5,5 +5,6 @@ from django.db import models
 
 class Profile(models.Model):
 	user=models.OneToOneField(User, on_delete=models.CASCADE)
-	nickname=models.TextField(max_length=50)
+	nickname=models.TextField(max_length=50, null=True)
+	kakao_id=models.IntegerField(null=False)
 
