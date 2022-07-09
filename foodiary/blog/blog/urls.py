@@ -19,6 +19,6 @@ from blog.blog.views import PostViewSet
 from blog.blog.views import CommentViewSet
 
 urlpatterns = [
-    path('post/',  PostViewSet.as_view({'get':'list', 'post':'create'})),
-    path('post/<int:pk>', PostViewSet.as_view({'get':'retrieve'})),
+    path('post/',  PostViewSet.as_view({'get': 'list', 'post': 'create'})),
+    path('post/<int:pk>', PostViewSet.as_view({'get': 'retrieve'})),
 ]

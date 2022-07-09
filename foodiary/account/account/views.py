@@ -13,7 +13,8 @@ from rest_framework import response, status
 from rest_framework.response import Response
 
 import requests
-import os, json
+import os
+import json
 from django.core.exceptions import ImproperlyConfigured
 
 from django.http import JsonResponse
@@ -24,48 +25,36 @@ from rest_framework import serializers
 
 from account.account.serializer import *
 from django.contrib.auth import authenticate, login, logout
-
-
-secret_file = os.path.join(r"C:\side_project\foodiary\foodiary\foodiary",'secrets.json') # secrets.json 파일 위치를 명시
-
-with open(secret_file) as f:
-    secrets = json.loads(f.read())
-
-def get_secret(setting, secrets=secrets):
-    """비밀 변수를 가져오거나 명시적 예외를 반환한다."""
-    try:
-        return secrets[setting]
-    except KeyError:
-        error_msg = "Set the {} environment variable".format(setting)
-        raise ImproperlyConfigured(error_msg)
-
-SECRET_KEY = get_secret("SECRET_KEY")
-
+from config.settings import SECRET_KEY, KAKAO_REST_API_KEY
 
 class CreateUserViewset(viewsets.ModelViewSet):
-    queryset=User.objects.all()
-    serializer_class=CreateUserSerializer
-    
-    def create(self,request):
-        serializer=CreateUserSerializer(request.POST)
-        user=User.objects.create(
+    queryset = User.objects.all()
+    serializer_class = CreateUserSerializer
+    def create(self, request):
+        serializer = CreateUserSerializer(request.POST)
+        user = User.objects.create_user(
             username=request.POST.get('username'),
             password=make_password(request.POST.get('password'))
         )
-        return Response(serializer.data,status=status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_20_OK)
 
-class loginView(APIView):
-    serializer_class=UserSerializer
-    queryset=User.objects.all()
-    def post(self, request):
-        user=authenticate(request, username=request.POST.get('username'), password=request.POST.get('password'))
-        if user is not None:
+
+class loginView(viewsets.ModelViewSet):
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
+    def create(self, request):
+        user = authenticate(request, username=request.POST.get(
+            'username'), password=request.POST.get('password'))
+        if user:
             login(request, user)
+        else:
+            redirect("http://127.0.0.1/account/api-jwt-auth/register/")
         return redirect("http://127.0.0.1/blog/post/")
+
 
 class KakaoGetLogin(View):
     def get(self, request):
-        REST_API_KEY = get_secret("KAKAO_REST_API_KEY")
+        REST_API_KEY = KAKAO_REST_API_KEY
         REDIRECT_URI = 'http://127.0.0.1:80/account/kakao/login/callback/'
 
         API_HOST = f'https://kauth.kakao.com/oauth/authorize?client_id={REST_API_KEY}&redirect_uri={REDIRECT_URI}&response_type=code'
@@ -79,7 +68,7 @@ class KaKaoSignInCallBackView(APIView):
         kakao_token_api = 'https://kauth.kakao.com/oauth/token'
         data = {
             'grant_type': 'authorization_code',
-            'client_id': get_secret("KAKAO_REST_API_KEY"),
+            'client_id': KAKAO_REST_API_KEY,
             'redirection_uri': 'http://localhost:80/',
             'code': auth_code
         }
@@ -88,33 +77,37 @@ class KaKaoSignInCallBackView(APIView):
 
         access_token = token_response.json().get('access_token')
 
-        user_info_response = requests.get('https://kapi.kakao.com/v2/user/me', headers={"Authorization": f'Bearer ${access_token}'})
-        user_info=user_info_response.json()
+        user_info_response = requests.get(
+            'https://kapi.kakao.com/v2/user/me', headers={"Authorization": f'Bearer ${access_token}'})
+        user_info = user_info_response.json()
         if not Profile.objects.filter(kakao_id=user_info["id"]).exists():
-            user_register_data={
+            user_register_data = {
                 'username': user_info["id"],
                 'password': user_info["properties"]["nickname"]
             }
-            user_register_response=requests.post('http://127.0.0.1/account/api-jwt-auth/register/', data=user_register_data)
-            profile=Profile.objects.create(user=User.objects.get(username=user_info["id"]), kakao_id=user_info["id"], nickname=user_info["properties"]["nickname"])
+            user_register_response = requests.post(
+                'http://127.0.0.1/account/api-jwt-auth/register/', data=user_register_data)
+            profile = Profile.objects.create(user=User.objects.get(
+                username=user_info["id"]), kakao_id=user_info["id"], nickname=user_info["properties"]["nickname"])
 
-        user=authenticate(request, username=user_info["id"], password=user_info["properties"]["nickname"])
+        user = authenticate(
+            request, username=user_info["id"], password=user_info["properties"]["nickname"])
         if user is not None:
             login(request, user)
         return redirect('http://127.0.0.1/blog/post/')
 
+
 class KakaoGetLogout(View):
     def get(self, request):
-        REST_API_KEY = get_secret("KAKAO_REST_API_KEY")
+        REST_API_KEY = KAKAO_REST_API_KEY
         REDIRECT_URI = 'http://127.0.0.1:80/'
 
         API_HOST = f'http://kauth.kakao.com/oauth/logout?client_id=${REST_API_KEY}&logout_redirect_uri=${REDIRECT_URI}'
 
         return redirect(API_HOST)
 
+
 class logoutView(View):
     def get(self, request):
         logout(request)
         return redirect('http://127.0.0.1/admin')
-
-
