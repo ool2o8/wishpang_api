@@ -1,9 +1,10 @@
+from django.conf import settings
 from django.views import View
 from rest_framework import viewsets
 from rest_framework.views import APIView
 from account.account.serializer import *
 from django.contrib.auth.models import User
-from account.account.serializer import CreateUserSerializer
+from account.account.serializer import CreateUserSerializer, UserSerializer
 
 from django.shortcuts import redirect, render
 from rest_framework.decorators import api_view, permission_classes
@@ -22,6 +23,7 @@ from django.contrib.auth.hashers import make_password
 from rest_framework import serializers
 
 from account.account.serializer import *
+from django.contrib.auth import authenticate, login, logout
 
 
 secret_file = os.path.join(r"C:\side_project\foodiary\foodiary\foodiary",'secrets.json') # secrets.json 파일 위치를 명시
@@ -52,6 +54,14 @@ class CreateUserViewset(viewsets.ModelViewSet):
         )
         return Response(serializer.data,status=status.HTTP_200_OK)
 
+class loginView(APIView):
+    serializer_class=UserSerializer
+    queryset=User.objects.all()
+    def post(self, request):
+        user=authenticate(request, username=request.POST.get('username'), password=request.POST.get('password'))
+        if user is not None:
+            login(request, user)
+        return redirect("http://127.0.0.1/blog/post/")
 
 class KakaoGetLogin(View):
     def get(self, request):
@@ -80,16 +90,18 @@ class KaKaoSignInCallBackView(APIView):
 
         user_info_response = requests.get('https://kapi.kakao.com/v2/user/me', headers={"Authorization": f'Bearer ${access_token}'})
         user_info=user_info_response.json()
-        if not User.objects.filter(username=user_info["id"]).exists():
-               # 유저 정보가 없으면 회원가입 되도록 합니다.
-                user = User.objects.create(
-                    username=user_info["id"],
-                    password=make_password(user_info["id"])
-                    )
+        if not Profile.objects.filter(kakao_id=user_info["id"]).exists():
+            user_register_data={
+                'username': user_info["id"],
+                'password': user_info["properties"]["nickname"]
+            }
+            user_register_response=requests.post('http://127.0.0.1/account/api-jwt-auth/register/', data=user_register_data)
+            profile=Profile.objects.create(user=User.objects.get(username=user_info["id"]), kakao_id=user_info["id"], nickname=user_info["properties"]["nickname"])
 
-                profile=Profile.objects.create(user=user, nickname=user_info["properties"]["nickname"])
-
-        return JsonResponse({"user_info": user_info_response.json(), "token_response": token_response.json()})
+        user=authenticate(request, username=user_info["id"], password=user_info["properties"]["nickname"])
+        if user is not None:
+            login(request, user)
+        return redirect('http://127.0.0.1/blog/post/')
 
 class KakaoGetLogout(View):
     def get(self, request):
@@ -100,7 +112,9 @@ class KakaoGetLogout(View):
 
         return redirect(API_HOST)
 
+class logoutView(View):
+    def get(self, request):
+        logout(request)
+        return redirect('http://127.0.0.1/admin')
 
-# class kakaoLogoutCallbackView(APIView):
-#     def get(self, request):
 

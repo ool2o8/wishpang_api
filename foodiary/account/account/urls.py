@@ -16,11 +16,15 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
-from account.account.views import CreateUserViewset
+from account.account.views import CreateUserViewset, logoutView, loginView
 from account.account.views import KaKaoSignInCallBackView, KakaoGetLogin, KakaoGetLogout
 
 
 urlpatterns = [
+
+    path('login/', loginView.as_view()),
+    path('logout/', logoutView.as_view()),
+
 	path('api-jwt-auth/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api-jwt-auth/register/', CreateUserViewset.as_view({'post':'create'}), name='register'),
     path('api-jwt-auth/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
@@ -29,6 +33,6 @@ urlpatterns = [
     path('kakao/login', KakaoGetLogin.as_view()),
     path('kakao/login/callback/', KaKaoSignInCallBackView.as_view()),
 
-    path('kakao/logout', KakaoGetLogout.as_view()),
+    path('kakao/logout', KakaoGetLogout.as_view())
     
 ]
