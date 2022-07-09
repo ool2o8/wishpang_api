@@ -4,7 +4,7 @@ from rest_framework import viewsets
 from rest_framework.views import APIView
 from account.account.serializer import *
 from django.contrib.auth.models import User
-from account.account.serializer import CreateUserSerializer
+from account.account.serializer import CreateUserSerializer, UserSerializer
 
 from django.shortcuts import redirect, render
 from rest_framework.decorators import api_view, permission_classes
@@ -54,6 +54,14 @@ class CreateUserViewset(viewsets.ModelViewSet):
         )
         return Response(serializer.data,status=status.HTTP_200_OK)
 
+class loginView(APIView):
+    serializer_class=UserSerializer
+    queryset=User.objects.all()
+    def post(self, request):
+        user=authenticate(request, username=request.POST.get('username'), password=request.POST.get('password'))
+        if user is not None:
+            login(request, user)
+        return redirect("http://127.0.0.1/blog/post/")
 
 class KakaoGetLogin(View):
     def get(self, request):
@@ -90,26 +98,10 @@ class KaKaoSignInCallBackView(APIView):
             user_register_response=requests.post('http://127.0.0.1/account/api-jwt-auth/register/', data=user_register_data)
             profile=Profile.objects.create(user=User.objects.get(username=user_info["id"]), kakao_id=user_info["id"], nickname=user_info["properties"]["nickname"])
 
-        user_data={
-                'username': user_info["id"],
-                'password': user_info["properties"]["nickname"]
-            }
-        get_token_response=requests.post('http://127.0.0.1/account/api-jwt-auth/', data=user_data)
         user=authenticate(request, username=user_info["id"], password=user_info["properties"]["nickname"])
         if user is not None:
             login(request, user)
-            self.request.session['id'] = user_info['id']
-            remember_session = self.request.POST.get('remember_session', False)
-        if remember_session:
-            settings.SESSION_EXPIRE_AT_BROWSER_CLOSE = False
-        token=get_token_response.json()
-        res=Response()
-        res.set_cookie(key='jwt' ,value=token["access"], httponly=True)
-        res.data={
-            'jwt': token["access"]
-            }
-        return res
-        # return redirect('http://127.0.0.1/')
+        return redirect('http://127.0.0.1/blog/post/')
 
 class KakaoGetLogout(View):
     def get(self, request):
@@ -120,7 +112,9 @@ class KakaoGetLogout(View):
 
         return redirect(API_HOST)
 
+class logoutView(View):
+    def get(self, request):
+        logout(request)
+        return redirect('http://127.0.0.1/admin')
 
-# class kakaoLogoutCallbackView(APIView):
-#     def get(self, request):
 
