@@ -30,26 +30,30 @@ from config.settings import SECRET_KEY, KAKAO_REST_API_KEY
 class CreateUserViewset(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = CreateUserSerializer
+    def get(self, request):
+        return Response("please register",status=status.HTTP_200_OK)
     def create(self, request):
         serializer = CreateUserSerializer(request.POST)
         user = User.objects.create_user(
             username=request.POST.get('username'),
-            password=make_password(request.POST.get('password'))
+            password=request.POST.get('password')
         )
-        return Response(serializer.data, status=status.HTTP_20_OK)
+        return redirect("http://127.0.0.1/blog/post/")
 
 
 class loginView(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     queryset = User.objects.all()
     def create(self, request):
+        serializer = UserSerializer(request.POST)
         user = authenticate(request, username=request.POST.get(
             'username'), password=request.POST.get('password'))
-        if user:
+        if user is not None:
             login(request, user)
+            return redirect("http://127.0.0.1/blog/post/")
         else:
-            redirect("http://127.0.0.1/account/api-jwt-auth/register/")
-        return redirect("http://127.0.0.1/blog/post/")
+            return redirect("http://127.0.0.1/account/api-jwt-auth/register/")
+        
 
 
 class KakaoGetLogin(View):

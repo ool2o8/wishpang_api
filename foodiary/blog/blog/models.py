@@ -11,8 +11,8 @@ class Post(models.Model):
                              on_delete=models.CASCADE, db_column="user_id")
     title = models.CharField(help_text="Post title",
                              max_length=100, blank=False, null=False)
-    created = models.DateTimeField(auto_now_add=True, default=' ')
-    updated = models.DateTimeField(auto_now=True, default=' ')
+    created = models.DateTimeField(auto_now_add=True, default='')
+    updated = models.DateTimeField(auto_now=True, default='')
     contents = models.TextField(
         help_text="post contents", blank=False, null=False)
 
@@ -20,6 +20,9 @@ class Post(models.Model):
 class Comment(models.Model):
     id = models.BigAutoField(help_text="Comment ID", primary_key=True)
     post_id = models.ForeignKey(
-        Post, related_name="post", on_delete=models.CASCADE, db_column="post_id")
+        Post, related_name="comment", on_delete=models.CASCADE, db_column="post_id")
     contents = models.TextField(
         help_text="Comment contents", blank=False, null=False)
+    created = models.DateTimeField(auto_now_add=True, default='')
+    updated = models.DateTimeField(auto_now=True, default='')
+    

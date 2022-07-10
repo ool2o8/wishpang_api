@@ -135,3 +135,7 @@ dmypy.json
 
 #secret_key
 secrets.json
+
+**/migrations/**
+!**/migrations
+!**/migrations/__init__.py
