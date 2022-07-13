@@ -74,6 +74,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
     def create(self, request, pk):
         queryset = Comment.objects.create(
+            auth=User.objects.get(id=request.user.id),
             post_id=Post.objects.get(id=pk),
             contents=request.POST.get('contents')
         )

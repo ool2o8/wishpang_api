@@ -10,23 +10,26 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
+import json
+import os
+from datetime import timedelta
+from django.core.exceptions import ImproperlyConfigured
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+MEDIA_ROOT = BASE_DIR/'media'
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-import os, json
-from django.core.exceptions import ImproperlyConfigured
 
 
-secret_file = os.path.join(BASE_DIR, 'secrets.json') # secrets.json 파일 위치를 명시
+secret_file = os.path.join(BASE_DIR, 'secrets.json')  # secrets.json 파일 위치를 명시
 
 with open(secret_file) as f:
     secrets = json.loads(f.read())
+
 
 def get_secret(setting, secrets=secrets):
     """비밀 변수를 가져오거나 명시적 예외를 반환한다."""
@@ -36,8 +39,9 @@ def get_secret(setting, secrets=secrets):
         error_msg = "Set the {} environment variable".format(setting)
         raise ImproperlyConfigured(error_msg)
 
+
 SECRET_KEY = get_secret("SECRET_KEY")
-KAKAO_REST_API_KEY =get_secret("KAKAO_REST_API_KEY")
+KAKAO_REST_API_KEY = get_secret("KAKAO_REST_API_KEY")
 
 SOCIAL_OUTH_CONFIG = {
     'KAKAO_REST_API_KEY': secrets['KAKAO_REST_API_KEY'],
@@ -61,11 +65,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
-INSTALLED_APPS+=[
-     #django-rest-auth
+INSTALLED_APPS += [
+    #django-rest-auth
     'rest_framework_simplejwt.token_blacklist',
     'rest_framework_simplejwt',
-    
+
     #my app
     'account',
     'blog',
@@ -74,13 +78,12 @@ INSTALLED_APPS+=[
 ]
 
 REST_FRAMEWORK = {
-	
-	'DEFAULT_AUTHENTICATION_CLASSES' : [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+
+	'DEFAULT_AUTHENTICATION_CLASSES': [
+            'rest_framework_simplejwt.authentication.JWTAuthentication',
 	]
 }
 
-from datetime import timedelta
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
@@ -200,10 +203,10 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTHENTICATION_BACKENDS = (
-	# Needed to login by username in Django admin, regardless of 'allauth'
-	'django.contrib.auth.backends.ModelBackend',
+    # Needed to login by username in Django admin, regardless of 'allauth'
+   	'django.contrib.auth.backends.ModelBackend',
 
-	# 'allauth' specific authentication methods, such as login by email
+   	# 'allauth' specific authentication methods, such as login by email
     'allauth.account.auth_backends.AuthenticationBackend',
 )
 
