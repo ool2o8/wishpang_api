@@ -82,7 +82,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
-
+#좋아요 기능
 class PostLikeView(APIView):
     permission_classes = [IsAuthenticated | ReadOnly]
     authentication_classes = [SessionAuthentication]
