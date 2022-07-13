@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from blog.blog.views import PostViewSet, UserPostView, CommentViewSet
+from blog.blog.views import PostViewSet, UserPostView, CommentViewSet, PostLikeView, PostLikeListView
 
 urlpatterns = [
     path('post/',  PostViewSet.as_view({'get': 'list', 'post': 'create'})),
@@ -23,6 +23,7 @@ urlpatterns = [
 
     path('my-post/', UserPostView.as_view()),
 
-    path('post/<int:pk>/comment/',CommentViewSet.as_view({'get': 'list', 'post': 'create'}))
-
+    path('post/<int:pk>/comment/',CommentViewSet.as_view({'get': 'list', 'post': 'create'})),
+    path('post/<int:post_pk>/like/', PostLikeView.as_view()),
+    path('post/<int:post_pk>/like-list/', PostLikeListView.as_view({'get':'list'}))
 ]

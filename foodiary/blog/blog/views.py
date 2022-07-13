@@ -1,10 +1,12 @@
+from django.http import JsonResponse
+from django.shortcuts import redirect
 from requests import Response
 from rest_framework import viewsets
 
 from django.contrib.auth.models import User
 from blog.blog.models import Post
 from blog.blog.models import Comment
-from blog.blog.serializer import PostSerializer
+from blog.blog.serializer import PostSerializer, LikeUserSerializer, LikeSerializer
 from blog.blog.serializer import CommentSerializer
 from rest_framework import permissions
 from rest_framework.permissions import BasePermission, IsAuthenticated, SAFE_METHODS
@@ -80,3 +82,34 @@ class CommentViewSet(viewsets.ModelViewSet):
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
+
+class PostLikeView(APIView):
+    permission_classes = [IsAuthenticated | ReadOnly]
+    authentication_classes = [SessionAuthentication]
+    queryset=User.objects.all()
+    serializer_class=LikeSerializer
+    def get(self, request, post_pk):
+        if request.user.is_authenticated:
+            serializer_class=LikeSerializer
+            post = Post.objects.get(id=post_pk)
+            serializer = LikeSerializer(post)
+            
+            if post.liker.filter(pk=request.user.pk).exists():
+                post.liker.remove(User.objects.get(id=request.user.id))
+            else:
+                post.liker.add(User.objects.get(id=request.user.id))
+            return Response(serializer.data,status=status.HTTP_201_CREATED)
+
+        return redirect('http://127.0.0.1/blog/{post_pk}/post/like-list/')
+
+from account.account.serializer import UserSerializer
+
+class PostLikeListView(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated | ReadOnly]
+    authentication_classes = [SessionAuthentication]
+    queryset=User.objects.all()
+    def list(self, request, post_pk):
+        queryset =User.objects.filter(like_post=post_pk)
+        serializer = LikeUserSerializer(queryset, many=True)
+        # if post.liker.filter(pk=request.user.pk).exists():
+        return Response(serializer.data, status=status.HTTP_200_OK)

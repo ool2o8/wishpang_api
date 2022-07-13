@@ -38,7 +38,7 @@ class CreateUserViewset(viewsets.ModelViewSet):
             username=request.POST.get('username'),
             password=request.POST.get('password')
         )
-        return redirect("http://127.0.0.1/blog/post/")
+        return redirect("http://127.0.0.1/account/login/")
 
 
 class loginView(viewsets.ModelViewSet):
