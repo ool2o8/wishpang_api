@@ -70,12 +70,19 @@ INSTALLED_APPS += [
     'rest_framework_simplejwt.token_blacklist',
     'rest_framework_simplejwt',
 
+    #background 
+    'django_apscheduler',
+
     #my app
     'account',
     'blog',
     'reviews',
 
 ]
+
+APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"  # Default
+
+SCHEDULER_DEFAULT = True
 
 REST_FRAMEWORK = {
 

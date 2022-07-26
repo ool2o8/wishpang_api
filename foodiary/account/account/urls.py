@@ -28,7 +28,7 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(), name="logout"),
 
    	path('api-jwt-auth/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api-jwt-auth/register/',
+    path('register/',
          CreateUserViewset.as_view({'post': 'create'}), name='register'),
     path('api-jwt-auth/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api-jwt-auth/verify/', TokenVerifyView.as_view(), name='token_verify'),

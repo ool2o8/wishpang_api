@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from blog.blog.models import Post
+from blog.blog.models import Post, Product, Wish
 from blog.blog.models import Comment
 from account.account.serializer import UserSerializer
 from django.contrib.auth.models import User
@@ -23,3 +23,16 @@ class LikeUserSerializer(serializers.ModelSerializer):
         
 class LikeSerializer(serializers.Serializer):
     id=serializers.IntegerField()
+
+
+
+class Productserializer(serializers.ModelSerializer):
+    class Meta:
+        model=Product
+        fields="__all__"
+        
+class WishSerializer(serializers.ModelSerializer):
+    name=serializers.CharField()
+    class Meta:
+        model=Wish
+        fields="__all__"
