@@ -17,8 +17,8 @@ from re import template
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
-from account.account.views import CreateUserViewset, logoutView, loginView
-from account.account.views import KaKaoSignInCallBackView, KakaoGetLogin, KakaoGetLogout
+from account.views import CreateUserViewset, logoutView, loginView
+from account.views import KaKaoSignInCallBackView, KakaoGetLogin, KakaoGetLogout
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [

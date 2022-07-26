@@ -1,14 +1,14 @@
-from account.account.serializer import UserSerializer
+from account.serializer import UserSerializer
 from django.http import JsonResponse
 from django.shortcuts import redirect
 from requests import Response
 from rest_framework import viewsets
 
 from django.contrib.auth.models import User
-from blog.blog.models import Post
-from blog.blog.models import Comment, Wish, Product
-from blog.blog.serializer import PostSerializer, LikeUserSerializer, LikeSerializer, Productserializer, WishSerializer
-from blog.blog.serializer import CommentSerializer
+from blog.models import Post
+from blog.models import Comment, Wish, Product
+from blog.serializer import PostSerializer, LikeUserSerializer, LikeSerializer, Productserializer, WishSerializer
+from blog.serializer import CommentSerializer
 from rest_framework import permissions
 from rest_framework.permissions import BasePermission, IsAuthenticated, SAFE_METHODS
 from rest_framework.authentication import SessionAuthentication
@@ -17,6 +17,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+import time
 import datetime
 import schedule
 import pymysql
@@ -221,8 +222,6 @@ class WishProductView(viewsets.ModelViewSet):
         queryset=Product.objects.all()
         serializer=Productserializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
-
 
 def crawling(self, request):
         options = webdriver.ChromeOptions()

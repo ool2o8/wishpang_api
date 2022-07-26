@@ -1,7 +1,7 @@
 from rest_framework import serializers
-from blog.blog.models import Post, Product, Wish
-from blog.blog.models import Comment
-from account.account.serializer import UserSerializer
+from blog.models import Post, Product, Wish
+from blog.models import Comment
+from account.serializer import UserSerializer
 from django.contrib.auth.models import User
 
 class CommentSerializer(serializers.ModelSerializer):

@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from blog.blog.views import PostViewSet, UserPostView, CommentViewSet, PostLikeView, PostLikeListView, MyWishView, MyWishUpdateView, WishProductView
+from blog.views import PostViewSet, UserPostView, CommentViewSet, PostLikeView, PostLikeListView, MyWishView, MyWishUpdateView, WishProductView
 
 urlpatterns = [
     path('post/',  PostViewSet.as_view({'get': 'list', 'post': 'create'})),

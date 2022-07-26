@@ -2,9 +2,9 @@ from django.conf import settings
 from django.views import View
 from rest_framework import viewsets
 from rest_framework.views import APIView
-from account.account.serializer import *
+from account.serializer import *
 from django.contrib.auth.models import User
-from account.account.serializer import CreateUserSerializer, UserSerializer
+from account.serializer import CreateUserSerializer, UserSerializer
 
 from django.shortcuts import redirect, render
 from rest_framework.decorators import api_view, permission_classes
@@ -19,11 +19,11 @@ from django.core.exceptions import ImproperlyConfigured
 
 from django.http import JsonResponse
 from django.db import models
-from account.account.models import Profile
+from account.models import Profile
 from django.contrib.auth.hashers import make_password
 from rest_framework import serializers
 
-from account.account.serializer import *
+from account.serializer import *
 from django.contrib.auth import authenticate, login, logout
 from config.settings import SECRET_KEY, KAKAO_REST_API_KEY
 
