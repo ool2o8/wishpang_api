@@ -1,6 +1,4 @@
-<<<<<<< HEAD
-foodiary
-=======
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -142,4 +140,3 @@ secrets.json
 **/migrations/**
 !**/migrations
 !**/migrations/__init__.py
->>>>>>> 77fc53380fda7dd168c537116189848f9b0fc322
