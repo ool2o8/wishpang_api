@@ -72,10 +72,10 @@ INSTALLED_APPS += [
 
     #my app
     'account',
-    'blog',
-    'reviews',
+    'blog'
 
 ]
+
 
 REST_FRAMEWORK = {
 
