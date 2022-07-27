@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from blog.views import PostViewSet, UserPostView, CommentViewSet, PostLikeView, PostLikeListView, MyWishView, MyWishUpdateView, WishProductView
+from blog.views import PostViewSet, UserPostView, CommentViewSet, PostLikeView, PostLikeListView, MyWishView, MyWishUpdateView, WishProductView, WishPriceView, WishPriceListView
 
 urlpatterns = [
     path('post/',  PostViewSet.as_view({'get': 'list', 'post': 'create'})),
@@ -30,5 +30,8 @@ urlpatterns = [
          PostLikeListView.as_view({'get': 'list'})),
     path('my-wish/', MyWishView.as_view({'get': 'list'})),
     path('my-wish/update/', MyWishUpdateView.as_view({'get':'list'})),
-    path('wish-product/', WishProductView.as_view({'get':'list'}))
+    path('wish-product/', WishProductView.as_view({'get':'list'})),
+    path('wish-price/', WishPriceListView.as_view({'get':'list'})),
+    path('wish-price/<int:product_id>/', WishPriceView.as_view({'get':'retrieve'}))
+    
 ]

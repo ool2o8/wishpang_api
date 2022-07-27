@@ -24,15 +24,19 @@ class LikeUserSerializer(serializers.ModelSerializer):
 class LikeSerializer(serializers.Serializer):
     id=serializers.IntegerField()
 
-
-
-class Productserializer(serializers.ModelSerializer):
+class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model=Product
         fields="__all__"
         
 class WishSerializer(serializers.ModelSerializer):
-    name=serializers.CharField()
+    product=ProductSerializer(read_only=True)
     class Meta:
         model=Wish
+        fields="__all__"
+
+class ProductPriceSerializer(serializers.ModelSerializer):
+    wish=WishSerializer()
+    class Meta:
+        model=Product
         fields="__all__"

@@ -7,7 +7,7 @@ from rest_framework import viewsets
 from django.contrib.auth.models import User
 from blog.models import Post
 from blog.models import Comment, Wish, Product
-from blog.serializer import PostSerializer, LikeUserSerializer, LikeSerializer, Productserializer, WishSerializer
+from blog.serializer import PostSerializer, LikeUserSerializer, LikeSerializer, ProductSerializer, WishSerializer, ProductPriceSerializer
 from blog.serializer import CommentSerializer
 from rest_framework import permissions
 from rest_framework.permissions import BasePermission, IsAuthenticated, SAFE_METHODS
@@ -135,7 +135,6 @@ class PostLikeListView(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class MyWishUpdateView(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
     authentication_classes = [SessionAuthentication]
     serializer_class=WishSerializer
     queryset=Wish.objects.all()
@@ -197,7 +196,7 @@ class MyWishUpdateView(viewsets.ModelViewSet):
     def list(self, request):
         self.crawling(request)
         queryset = Product.objects.all()
-        serializer=Productserializer(queryset, many=True)
+        serializer=ProductSerializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -216,11 +215,32 @@ class MyWishView(viewsets.ModelViewSet):
 class WishProductView(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     authentication_classes = [SessionAuthentication]
-    serializer_class=Productserializer
+    serializer_class=ProductSerializer
     queryset=Wish.objects.all()
     def list(self, request):
         queryset=Product.objects.all()
-        serializer=Productserializer(queryset, many=True)
+        serializer=ProductSerializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class WishPriceView(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [SessionAuthentication]
+    serializer_class=WishSerializer
+    queryset=Wish.objects.all()
+    def retrieve(self, request, product_id):
+        queryset=Wish.objects.filter(product__id=product_id).order_by('-price').first()
+        serializer=WishSerializer(queryset)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class WishPriceListView(viewsets.ModelViewSet):
+    permission_classes=[IsAuthenticated]
+    authentication_classes=[SessionAuthentication]
+    serializer_class=WishSerializer
+    queryset=Product.objects.all()
+    def list(self, request):
+        queryset=Wish.objects.all()
+        serializer=WishSerializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 def crawling(self, request):
