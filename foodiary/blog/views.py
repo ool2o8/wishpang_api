@@ -28,6 +28,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 
+from django.db.models import Max, Min, Avg
+
 
 class ReadOnly(BasePermission):
     def has_permission(self, request, view):
@@ -189,7 +191,8 @@ class MyWishUpdateView(viewsets.ModelViewSet):
                     quantity = el.find_element(
                                     By.XPATH, 'td[@class="product-box"]/div[@id]/div[@class="option-price-part"]/span[@class="select-select"]/select[@class="quantity-select"]').get_attribute('data-quantity')
                     quantity = int(quantity)
-                    res,_ = Product.objects.get_or_create(id=id, name=product_name)
+                    image=el.find_element(By.XPATH, 'td/a/img').get_attribute('src')
+                    res,_ = Product.objects.get_or_create(id=id, name=product_name, image=image)
                     wish = Wish.objects.create(
                         product=res, price=price/quantity, time=datetime.datetime.now())
                     wish.wisher.add(User.objects.get(id=request.user.id))
@@ -239,9 +242,9 @@ class WishPriceListView(viewsets.ModelViewSet):
     serializer_class=WishSerializer
     queryset=Product.objects.all()
     def list(self, request):
-        queryset=Wish.objects.all()
+        queryset=Wish.objects.all().values('product_id', 'product__name').annotate(min=Min('price'))
         serializer=WishSerializer(queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(queryset, status=status.HTTP_200_OK)
 
 def crawling(self, request):
         options = webdriver.ChromeOptions()
