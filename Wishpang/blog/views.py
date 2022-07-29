@@ -7,7 +7,7 @@ from rest_framework import viewsets
 from django.contrib.auth.models import User
 from blog.models import Post
 from blog.models import Comment, Wish, Product
-from blog.serializer import PostSerializer, LikeUserSerializer, LikeSerializer, Productserializer, WishSerializer
+from blog.serializer import PostSerializer, LikeUserSerializer, LikeSerializer, ProductSerializer, WishSerializer, ProductPriceSerializer
 from blog.serializer import CommentSerializer
 from rest_framework import permissions
 from rest_framework.permissions import BasePermission, IsAuthenticated, SAFE_METHODS
@@ -27,6 +27,8 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
+
+from django.db.models import Max, Min, Avg
 
 
 class ReadOnly(BasePermission):
@@ -135,7 +137,6 @@ class PostLikeListView(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class MyWishUpdateView(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
     authentication_classes = [SessionAuthentication]
     serializer_class=WishSerializer
     queryset=Wish.objects.all()
@@ -190,14 +191,15 @@ class MyWishUpdateView(viewsets.ModelViewSet):
                     quantity = el.find_element(
                                     By.XPATH, 'td[@class="product-box"]/div[@id]/div[@class="option-price-part"]/span[@class="select-select"]/select[@class="quantity-select"]').get_attribute('data-quantity')
                     quantity = int(quantity)
-                    res,_ = Product.objects.get_or_create(id=id, name=product_name)
+                    image=el.find_element(By.XPATH, 'td/a/img').get_attribute('src')
+                    res,_ = Product.objects.get_or_create(id=id, name=product_name, image=image)
                     wish = Wish.objects.create(
                         product=res, price=price/quantity, time=datetime.datetime.now())
                     wish.wisher.add(User.objects.get(id=request.user.id))
     def list(self, request):
         self.crawling(request)
         queryset = Product.objects.all()
-        serializer=Productserializer(queryset, many=True)
+        serializer=ProductSerializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -216,12 +218,33 @@ class MyWishView(viewsets.ModelViewSet):
 class WishProductView(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     authentication_classes = [SessionAuthentication]
-    serializer_class=Productserializer
+    serializer_class=ProductSerializer
     queryset=Wish.objects.all()
     def list(self, request):
         queryset=Product.objects.all()
-        serializer=Productserializer(queryset, many=True)
+        serializer=ProductSerializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class WishPriceView(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [SessionAuthentication]
+    serializer_class=WishSerializer
+    queryset=Wish.objects.all()
+    def retrieve(self, request, product_id):
+        queryset=Wish.objects.filter(product__id=product_id).order_by('-price').first()
+        serializer=WishSerializer(queryset)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class WishPriceListView(viewsets.ModelViewSet):
+    permission_classes=[IsAuthenticated]
+    authentication_classes=[SessionAuthentication]
+    serializer_class=WishSerializer
+    queryset=Product.objects.all()
+    def list(self, request):
+        queryset=Wish.objects.all().values('product_id', 'product__name').annotate(min=Min('price'))
+        serializer=WishSerializer(queryset, many=True)
+        return Response(queryset, status=status.HTTP_200_OK)
 
 def crawling(self, request):
         options = webdriver.ChromeOptions()
