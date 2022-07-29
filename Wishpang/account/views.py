@@ -52,7 +52,7 @@ class loginView(viewsets.ModelViewSet):
             login(request, user)
             return redirect("http://127.0.0.1/blog/post/")
         else:
-            return redirect("http://127.0.0.1/account/api-jwt-auth/register/")
+            return redirect("http://127.0.0.1/account/register/")
         
 
 
@@ -90,7 +90,7 @@ class KaKaoSignInCallBackView(APIView):
                 'password': user_info["properties"]["nickname"]
             }
             user_register_response = requests.post(
-                'http://127.0.0.1/account/api-jwt-auth/register/', data=user_register_data)
+                'http://127.0.0.1/account/register/', data=user_register_data)
             profile = Profile.objects.create(user=User.objects.get(
                 username=user_info["id"]), kakao_id=user_info["id"], nickname=user_info["properties"]["nickname"])
 
