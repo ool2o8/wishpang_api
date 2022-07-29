@@ -35,7 +35,7 @@ def user_directory_path(instance, filename):
 class Product(models.Model):
     id=models.BigAutoField(help_text="Product id",primary_key=True)
     name=models.CharField(help_text="product name",blank=False, max_length=100, null=False)
-    image=models.ImageField(upload_to="image")
+    image=models.ImageField(upload_to="images/")
 
 class Wish(models.Model):
     id = models.BigAutoField(primary_key=True)

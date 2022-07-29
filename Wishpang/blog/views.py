@@ -31,6 +31,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from django.db.models import Max, Min, Avg
 
 
+
 class ReadOnly(BasePermission):
     def has_permission(self, request, view):
         return request.method in SAFE_METHODS
@@ -142,9 +143,9 @@ class MyWishUpdateView(viewsets.ModelViewSet):
     queryset=Wish.objects.all()
     def crawling(self, request):
         options = webdriver.ChromeOptions()
-        options.add_argument("--disable-blink-features=AutomationControlled")
-        options.add_experimental_option("excludeSwitches", ["enable-automation"])
-        options.add_experimental_option("useAutomationExtension", False)
+        # options.add_argument("--disable-blink-features=AutomationControlled")
+        # options.add_experimental_option("excludeSwitches", ["enable-automation"])
+        # options.add_experimental_option("useAutomationExtension", False)
         options.add_experimental_option(
             "prefs", {"prfile.managed_default_content_setting.images": 2})
 
@@ -162,7 +163,7 @@ class MyWishUpdateView(viewsets.ModelViewSet):
         driver.find_element(
             By.CSS_SELECTOR, 'body > div.member-wrapper.member-wrapper--flex > div > div > form > div.login__content.login__content--trigger > button').click()
 
-        driver.implicitly_wait(5)
+        driver.implicitly_wait(10)
         driver.find_element(
             By.XPATH, """//*[@id="header"]/section/div/ul/li[2]/a""").click()
 
@@ -170,7 +171,6 @@ class MyWishUpdateView(viewsets.ModelViewSet):
 
         elements = driver.find_elements(
             By.CSS_SELECTOR, '#cartTable-rocket-fresh > tr')
-
         for el in elements:
             if el.get_attribute('class') == 'cart-deal-item':
                 if el.get_attribute('data-item-status') == 'MISSED':
@@ -196,6 +196,7 @@ class MyWishUpdateView(viewsets.ModelViewSet):
                     wish = Wish.objects.create(
                         product=res, price=price/quantity, time=datetime.datetime.now())
                     wish.wisher.add(User.objects.get(id=request.user.id))
+        driver.quit()
     def list(self, request):
         self.crawling(request)
         queryset = Product.objects.all()
@@ -242,7 +243,7 @@ class WishPriceListView(viewsets.ModelViewSet):
     serializer_class=WishSerializer
     queryset=Product.objects.all()
     def list(self, request):
-        queryset=Wish.objects.all().values('product_id', 'product__name').annotate(min=Min('price'))
+        queryset=Wish.objects.all().values('product_id', 'product__name').annotate(min=Min('price'), max=Max('price'))
         serializer=WishSerializer(queryset, many=True)
         return Response(queryset, status=status.HTTP_200_OK)
 
