@@ -11,3 +11,4 @@
 permmition class 지정  permmition class 지정
 * 2022-07-27 상품 가격 비교 뷰 작성 -ing
 * 2022-07-28 상품 최저가 필터링
+* 2022-07-31 aws rds 데이터 베이스 연결
