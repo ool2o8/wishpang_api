@@ -76,7 +76,9 @@ INSTALLED_APPS += [
 
     #my app
     'account',
-    'blog'
+    'blog',
+
+    'corsheaders'
 
 ]
 
@@ -128,6 +130,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware'
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -157,11 +160,16 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'test',
+        'USER': 'root',
+        'PASSWORD' : get_secret('MYSQL_PASSWORD'),
+        'HOST': 'wishpang.cobvlfmpoczi.ap-northeast-2.rds.amazonaws.com',
+        'PORT': '3306',
     }
 }
-
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators

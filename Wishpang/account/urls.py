@@ -24,17 +24,17 @@ from django.contrib.auth import views as auth_views
 urlpatterns = [
 
     # path('login/', auth_views.LoginView.as_view(template_name='account\login.html'), name="login"),
-    path('login/', loginView.as_view({'post': 'create'}), name="login"),
-    path('logout/', auth_views.LogoutView.as_view(), name="logout"),
+    path('login', loginView.as_view({'post': 'create'}), name="login"),
+    path('logout', auth_views.LogoutView.as_view(), name="logout"),
 
-   	path('api-jwt-auth/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('register/',
+   	path('api-jwt-auth', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('register',
          CreateUserViewset.as_view({'post': 'create'}), name='register'),
-    path('api-jwt-auth/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('api-jwt-auth/verify/', TokenVerifyView.as_view(), name='token_verify'),
+    path('api-jwt-auth/refresh', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api-jwt-auth/verify', TokenVerifyView.as_view(), name='token_verify'),
 
     path('kakao/login', KakaoGetLogin.as_view()),
-    path('kakao/login/callback/', KaKaoSignInCallBackView.as_view()),
+    path('kakao/login/callback', KaKaoSignInCallBackView.as_view()),
 
     path('kakao/logout', KakaoGetLogout.as_view())
 
