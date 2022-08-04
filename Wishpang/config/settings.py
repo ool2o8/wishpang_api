@@ -42,17 +42,17 @@ def get_secret(setting, secrets=secrets):
         raise ImproperlyConfigured(error_msg)
 
 
-SECRET_KEY = get_secret("SECRET_KEY")
-KAKAO_REST_API_KEY = get_secret("KAKAO_REST_API_KEY")
+SECRET_KEY = secrets["SECRET_KEY"]
+KAKAO_REST_API_KEY = secrets['KAKAO_REST_API_KEY']
 
 SOCIAL_OUTH_CONFIG = {
     'KAKAO_REST_API_KEY': secrets['KAKAO_REST_API_KEY'],
 }
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -161,9 +161,9 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'test',
+        'NAME': 'wishpang',
         'USER': 'root',
-        'PASSWORD' : get_secret('MYSQL_PASSWORD'),
+        'PASSWORD' : secrets['MYSQL_PASSWORD'],
         'HOST': 'wishpang.cobvlfmpoczi.ap-northeast-2.rds.amazonaws.com',
         'PORT': '3306',
     }

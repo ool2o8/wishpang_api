@@ -20,7 +20,6 @@ from rest_framework.views import APIView
 import time
 import datetime
 import schedule
-import pymysql
 from xml.dom.minidom import Element
 
 from selenium import webdriver
