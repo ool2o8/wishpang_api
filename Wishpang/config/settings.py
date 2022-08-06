@@ -42,8 +42,8 @@ def get_secret(setting, secrets=secrets):
         raise ImproperlyConfigured(error_msg)
 
 
-SECRET_KEY = get_secret("SECRET_KEY")
-KAKAO_REST_API_KEY = get_secret("KAKAO_REST_API_KEY")
+SECRET_KEY = secrets["SECRET_KEY"]
+KAKAO_REST_API_KEY = secrets['KAKAO_REST_API_KEY']
 
 SOCIAL_OUTH_CONFIG = {
     'KAKAO_REST_API_KEY': secrets['KAKAO_REST_API_KEY'],
@@ -128,7 +128,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'wishpang',
         'USER': 'root',
-        'PASSWORD' : get_secret('MYSQL_PASSWORD'),
+        'PASSWORD' : secrets['MYSQL_PASSWORD'],
         'HOST': 'wishpang.cobvlfmpoczi.ap-northeast-2.rds.amazonaws.com',
         'PORT': '3306',
     }
