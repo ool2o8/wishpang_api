@@ -19,15 +19,13 @@ from rest_framework.views import APIView
 
 import time
 import datetime
-import schedule
-from xml.dom.minidom import Element
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 
-from django.db.models import Max, Min, Avg
+from django.db.models import Max, Min
 
 
 

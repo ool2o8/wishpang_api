@@ -38,7 +38,7 @@ class CreateUserViewset(viewsets.ModelViewSet):
             username=request.POST.get('username'),
             password=request.POST.get('password')
         )
-        return redirect("http://127.0.0.1/account/login")
+        return redirect("http://43.200.112.158/account/login")
 
 
 class loginView(viewsets.ModelViewSet):
@@ -50,16 +50,16 @@ class loginView(viewsets.ModelViewSet):
             'username'), password=request.POST.get('password'))
         if user is not None:
             login(request, user)
-            return redirect("http://127.0.0.1/blog/post")
+            return redirect("http://43.200.112.158/blog/post")
         else:
-            return redirect("http://127.0.0.1/account/register")
+            return redirect("http://43.200.112.158/account/register")
         
 
 
 class KakaoGetLogin(View):
     def get(self, request):
         REST_API_KEY = KAKAO_REST_API_KEY
-        REDIRECT_URI = 'http://127.0.0.1:80/account/kakao/login/callback'
+        REDIRECT_URI = 'http://43.200.112.158:80/account/kakao/login/callback'
 
         API_HOST = f'https://kauth.kakao.com/oauth/authorize?client_id={REST_API_KEY}&redirect_uri={REDIRECT_URI}&response_type=code'
 
@@ -73,7 +73,7 @@ class KaKaoSignInCallBackView(APIView):
         data = {
             'grant_type': 'authorization_code',
             'client_id': KAKAO_REST_API_KEY,
-            'redirection_uri': 'http://localhost:80/',
+            'redirection_uri': 'http://43.200.112.158:80/',
             'code': auth_code
         }
 
@@ -90,7 +90,7 @@ class KaKaoSignInCallBackView(APIView):
                 'password': user_info["properties"]["nickname"]
             }
             user_register_response = requests.post(
-                'http://127.0.0.1/account/register', data=user_register_data)
+                'http://43.200.112.158/account/register', data=user_register_data)
             profile = Profile.objects.create(user=User.objects.get(
                 username=user_info["id"]), kakao_id=user_info["id"], nickname=user_info["properties"]["nickname"])
 
@@ -98,13 +98,13 @@ class KaKaoSignInCallBackView(APIView):
             request, username=user_info["id"], password=user_info["properties"]["nickname"])
         if user is not None:
             login(request, user)
-        return redirect('http://127.0.0.1/blog/post')
+        return redirect('http://43.200.112.158/blog/post')
 
 
 class KakaoGetLogout(View):
     def get(self, request):
         REST_API_KEY = KAKAO_REST_API_KEY
-        REDIRECT_URI = 'http://127.0.0.1:80/'
+        REDIRECT_URI = 'http://43.200.112.158:80/'
 
         API_HOST = f'http://kauth.kakao.com/oauth/logout?client_id=${REST_API_KEY}&logout_redirect_uri=${REDIRECT_URI}'
 
@@ -114,4 +114,4 @@ class KakaoGetLogout(View):
 class logoutView(View):
     def get(self, request):
         logout(request)
-        return redirect('http://127.0.0.1/admin')
+        return redirect('http://43.200.112.158/admin')
