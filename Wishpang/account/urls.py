@@ -32,7 +32,4 @@ urlpatterns = [
 
     path('kakao/login', KakaoGetLogin.as_view()),
     path('kakao/login/callback', KaKaoSignInCallBackView.as_view()),
-
-    path('kakao/logout', KakaoGetLogout.as_view())
-
 ]
