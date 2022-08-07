@@ -4,10 +4,16 @@ from blog.models import Comment
 from account.serializer import UserSerializer
 from django.contrib.auth.models import User
 
+class AuthSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=User
+        fields=("username",)
+        
 class CommentSerializer(serializers.ModelSerializer):
+    auth=AuthSerializer(read_only=True)
     class Meta:
         model = Comment
-        fields = ("id", "post_id", "contents", "created", "updated")
+        fields = ("id", "post_id", "auth", "contents", "created", "updated")
 
 class LikeUserSerializer(serializers.ModelSerializer):
     class Meta:
