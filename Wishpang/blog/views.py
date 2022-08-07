@@ -118,7 +118,7 @@ class PostLikeView(APIView):
                 post.liker.add(User.objects.get(id=request.user.id))
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        return redirect('http://43.200.112.158/blog/{post_pk}/post/like-list/')
+        return redirect('http://localhost/blog/{post_pk}/post/like-list/')
 
 
 class PostLikeListView(viewsets.ModelViewSet):
