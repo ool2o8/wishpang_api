@@ -142,3 +142,4 @@ Wishpang_key.pem
 **/migrations/**
 !**/migrations
 !**/migrations/__init__.py
+__migrations__/

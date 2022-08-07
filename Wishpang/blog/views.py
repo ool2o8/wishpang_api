@@ -51,20 +51,19 @@ class IsOwnerOrReadOnly(BasePermission):
 
 
 class PostViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated | ReadOnly]
+    permission_classes = [IsOwnerOrReadOnly]
     authentication_classes = [SessionAuthentication]
-    queryset = Post.objects.all()
+    queryset = Post.objects.all().order_by('-created')
     serializer_class = PostSerializer
 
 
 class UserPostView(APIView):
     permission_classes = [IsOwnerOrReadOnly]
     authentication_classes = [SessionAuthentication]
-    queryset = Post.objects.all()
     serializer_class = PostSerializer
 
     def get(self, request):
-        queryset = Post.objects.filter(auth_id=request.user.id)
+        queryset = Post.objects.filter(auth=User.objects.get(id=request.user.id))
         serializer = PostSerializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -101,8 +100,6 @@ class CommentViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 #좋아요 기능
-
-
 class PostLikeView(APIView):
     permission_classes = [IsAuthenticated | ReadOnly]
     authentication_classes = [SessionAuthentication]

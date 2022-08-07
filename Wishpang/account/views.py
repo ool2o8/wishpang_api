@@ -114,4 +114,4 @@ class KakaoGetLogout(View):
 class logoutView(View):
     def get(self, request):
         logout(request)
-        return redirect('http://43.200.112.158/admin')
+        return redirect('http://43.200.112.158/account/login')

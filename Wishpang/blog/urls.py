@@ -21,7 +21,7 @@ urlpatterns = [
     path('post',  PostViewSet.as_view({'get': 'list', 'post': 'create'})),
     path('post/<int:pk>', PostViewSet.as_view({'get': 'retrieve'})),
 
-    path('my-post', UserPostView.as_view()),
+    path('user-post', UserPostView.as_view()),
 
     path('post/<int:pk>/comment',
          CommentViewSet.as_view({'get': 'list', 'post': 'create'})),
