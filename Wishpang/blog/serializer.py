@@ -9,18 +9,19 @@ class CommentSerializer(serializers.ModelSerializer):
         model = Comment
         fields = ("id", "post_id", "contents", "created", "updated")
 
-
-class PostSerializer(serializers.ModelSerializer):
-    post = CommentSerializer(many=True, read_only=True)
-    class Meta:
-        model = Post
-        fields = ("id", "title", "auth", "created", "updated", "contents", "post")
-
 class LikeUserSerializer(serializers.ModelSerializer):
     class Meta:
         model=User
         fields=("id", "username")
-        
+
+class PostSerializer(serializers.ModelSerializer):
+    comment = CommentSerializer(many=True, read_only=True)
+    liker=LikeUserSerializer(many=True, read_only=True)
+    class Meta:
+        model = Post
+        fields = ("id", "title", "auth", "created", "updated", "contents", "liker", "comment")
+
+
 class LikeSerializer(serializers.Serializer):
     id=serializers.IntegerField()
 
