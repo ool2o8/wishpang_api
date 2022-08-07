@@ -16,4 +16,4 @@ class UserSerializer(serializers.ModelSerializer):
 class CreateUserProfile(serializers.ModelSerializer):
     class Meta:
         model=Profile
-        fields=("nickname")
+        fields=("nickname",)
