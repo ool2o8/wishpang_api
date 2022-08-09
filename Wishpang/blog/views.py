@@ -112,7 +112,7 @@ class PostLikeView(APIView):
             post = Post.objects.get(id=post_pk)
             serializer = LikeSerializer(post)
 
-            if post.liker.filter(pk=request.user.pk).exists():
+            if post.liker.filter(id=request.user.id).exists():
                 post.liker.remove(User.objects.get(id=request.user.id))
             else:
                 post.liker.add(User.objects.get(id=request.user.id))
