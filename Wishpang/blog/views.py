@@ -13,7 +13,7 @@ from rest_framework import permissions
 from rest_framework.permissions import BasePermission, IsAuthenticated, SAFE_METHODS
 from rest_framework.authentication import SessionAuthentication
 
-from rest_framework import status
+from rest_framework import status, generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -35,11 +35,6 @@ class ReadOnly(BasePermission):
 
 
 class IsOwnerOrReadOnly(BasePermission):
-    """
-    Object-level permission to only allow owners of an object to edit it.
-    Assumes the model instance has an `owner` attribute.
-    """
-
     def has_object_permission(self, request, view, obj):
         # Read permissions are allowed to any request,
         # so we'll always allow GET, HEAD or OPTIONS requests.
@@ -77,18 +72,16 @@ class UserPostView(APIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-class CommentViewSet(viewsets.ModelViewSet):
+class CommentViewSet(APIView):
     permission_classes = [IsAuthenticated | ReadOnly]
     authentication_classes = [SessionAuthentication]
-    queryset = Comment.objects.all()
     serializer_class = CommentSerializer
-
-    def list(self, request, pk):
-        queryset = Comment.objects.filter(post_id=pk)
+    def get(self, request, pk):
+        queryset = Comment.objects.select_related('auth').filter(post_id=pk)
         serializer = CommentSerializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def create(self, request, pk):
+    def post(self, request, pk):
         queryset = Comment.objects.create(
             auth=User.objects.get(id=request.user.id),
             post=Post.objects.get(id=pk),
@@ -103,30 +96,28 @@ class CommentViewSet(viewsets.ModelViewSet):
 class PostLikeView(APIView):
     permission_classes = [IsAuthenticated | ReadOnly]
     authentication_classes = [SessionAuthentication]
-    queryset = User.objects.all()
     serializer_class = LikeSerializer
 
     def get(self, request, post_pk):
         if request.user.is_authenticated:
             serializer_class = LikeSerializer
             post = Post.objects.get(id=post_pk)
+            queryset=User.objects
             serializer = LikeSerializer(post)
-
             if post.liker.filter(id=request.user.id).exists():
                 post.liker.remove(User.objects.get(id=request.user.id))
             else:
                 post.liker.add(User.objects.get(id=request.user.id))
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        return redirect('http://43.200.112.158/blog/{post_pk}/post/like-list/')
+        return redirect('http://127.0.0.1/blog/{post_pk}/post/like-list/')
 
 
-class PostLikeListView(viewsets.ModelViewSet):
+class PostLikeListView(APIView):
     permission_classes = [IsAuthenticated | ReadOnly]
     authentication_classes = [SessionAuthentication]
-    queryset = User.objects.all()
-    def list(self, request, post_pk):
-        queryset = User.objects.filter(like_post=post_pk)
+    def get(self, request, post_pk):
+        queryset = User.objects.prefetch_related('like_post').filter(like_post=post_pk)
         serializer = LikeUserSerializer(queryset, many=True)
         # if post.liker.filter(pk=request.user.pk).exists():
         return Response(serializer.data, status=status.HTTP_200_OK)

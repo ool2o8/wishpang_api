@@ -33,24 +33,24 @@ class CommentFactory(factory.django.DjangoModelFactory):
 class likeFactory(factory.django.DjangoModelFactory):
     class Meta:
         model=Post
-        
-    post=Post.objects.all().order_by('?').first()
+    post=Post.objects.all().first()
     auth=User.objects.all().order_by('?').first()
     if post.liker.filter(id=auth.id).exists():
-                post.liker.remove(User.objects.get(id=auth.id))
+                post.liker.remove(auth)
     else:
-        post.liker.add(User.objects.get(id=auth.id))
+        post.liker.add(auth)
     
+# user=UserFactory.create_batch(10)
+
 
 # posts=PostFactory.create_batch(10)
 
 # for post in posts:
 #     print(post)
 
-likes=likeFactory.create_batch(10)
+for _ in range(10):
+    likeFactory.create_batch(1)
 
-for like in likes:
-    print(like)
 
 # comments=CommentFactory.create_batch(100)
 

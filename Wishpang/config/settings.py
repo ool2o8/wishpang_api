@@ -50,7 +50,7 @@ SOCIAL_OUTH_CONFIG = {
 }
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 CSRF_COOKIE_SECURE=True
 
 ALLOWED_HOSTS = ['*']
@@ -80,12 +80,6 @@ INSTALLED_APPS += [
 ]
 
 
-REST_FRAMEWORK = {
-
-	'DEFAULT_AUTHENTICATION_CLASSES': [
-            'rest_framework_simplejwt.authentication.JWTAuthentication',
-	]
-}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -97,6 +91,23 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware'
 ]
+
+LOGGING = {
+"version": 1,
+"disable_existing_loggers": False,
+"handlers": {
+    "console": {
+        "level": "DEBUG",
+        "class": "logging.StreamHandler",
+    },
+},
+"loggers": {
+    "django.db.backends": {
+        "handlers": ["console"],
+        "level": "DEBUG",
+    },
+},
+}
 
 ROOT_URLCONF = 'config.urls'
 
@@ -125,12 +136,8 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'wishpang',
-        'USER': 'root',
-        'PASSWORD' : secrets['MYSQL_PASSWORD'],
-        'HOST': 'wishpang.cobvlfmpoczi.ap-northeast-2.rds.amazonaws.com',
-        'PORT': '3306',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
 CORS_ORIGIN_ALLOW_ALL = True

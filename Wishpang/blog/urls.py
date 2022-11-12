@@ -24,10 +24,10 @@ urlpatterns = [
     path('user-post', UserPostView.as_view()),
 
     path('post/<int:pk>/comment',
-         CommentViewSet.as_view({'get': 'list', 'post': 'create'})),
+         CommentViewSet.as_view()),
     path('post/<int:post_pk>/like', PostLikeView.as_view()),
     path('post/<int:post_pk>/like-list',
-         PostLikeListView.as_view({'get': 'list'})),
+         PostLikeListView.as_view()),
     path('my-wish', MyWishView.as_view({'get': 'list'})),
     path('my-wish/update', MyWishUpdateView.as_view({'get':'list'})),
     path('wish-product', WishProductView.as_view({'get':'list'})),
