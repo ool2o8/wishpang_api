@@ -59,7 +59,7 @@ class loginView(viewsets.ModelViewSet):
 class KakaoGetLogin(View):
     def get(self, request):
         REST_API_KEY = KAKAO_REST_API_KEY
-        REDIRECT_URI = 'http://127.0.0.1:80/account/kakao/login/callback'
+        REDIRECT_URI = 'http://127.0.0.1/account/kakao/login/callback'
 
         API_HOST = f'https://kauth.kakao.com/oauth/authorize?client_id={REST_API_KEY}&redirect_uri={REDIRECT_URI}&response_type=code'
 
@@ -73,7 +73,7 @@ class KaKaoSignInCallBackView(APIView):
         data = {
             'grant_type': 'authorization_code',
             'client_id': KAKAO_REST_API_KEY,
-            'redirection_uri': 'http://127.0.0.1:80',
+            'redirection_uri': 'http://127.0.0.1',
             'code': auth_code
         }
 
@@ -104,7 +104,7 @@ class KaKaoSignInCallBackView(APIView):
 class KakaoGetLogout(View):
     def get(self, request):
         REST_API_KEY = KAKAO_REST_API_KEY
-        REDIRECT_URI = 'http://127.0.0.1:80'
+        REDIRECT_URI = 'http://127.0.0.1'
 
         API_HOST = f'http://kauth.kakao.com/oauth/logout?client_id=${REST_API_KEY}&logout_redirect_uri=${REDIRECT_URI}'
 

@@ -190,14 +190,12 @@ class MyWishUpdateView(viewsets.ModelViewSet):
 
 
 
-class MyWishView(viewsets.ModelViewSet):
+class MyWishView(APIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [SessionAuthentication]
     serializer_class=WishSerializer
-    queryset=Wish.objects.all()
-   
-    def list(self, request):
-        queryset = Wish.objects.filter(wisher=request.user.id)
+    def get(self, request):
+        queryset = Wish.objects.select_related('product').filter(wisher=request.user.id)
         serializer=WishSerializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
