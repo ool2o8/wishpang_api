@@ -13,10 +13,8 @@ permmition class 지정  permmition class 지정
 * 2022-07-28 상품 최저가 필터링
 * 2022-07-31 aws rds 데이터 베이스 연결
 
+# 장바구니 상품 update 시퀀스 다이어그램
+![Untitled (2)](https://user-images.githubusercontent.com/59391473/203673980-6683036e-cd72-482f-953d-cf48655a744d.png)
 
-## 게시글 등록 시퀀스 다이어그램
-![Untitled](https://user-images.githubusercontent.com/59391473/203673635-b713ffbb-410f-48b7-b2cb-1f19928afcbb.png)
-
-
-## 로그인 시퀀스 다이어그램
-![Untitled (1)](https://user-images.githubusercontent.com/59391473/203673658-9ffdeb63-9db1-44d5-a536-2e61ae4c8a7d.png)
+# 로그인 시퀀스 다이어그램
+![Untitled (3)](https://user-images.githubusercontent.com/59391473/203673983-2c1ab92b-7674-45dd-9426-b025b2b1d46a.png)
