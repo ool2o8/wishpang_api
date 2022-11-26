@@ -33,7 +33,7 @@
 
   + **쿠팡 장바구니 상품 가격 저장**<br>
     + **ERD**<br>
-    ![image](https://user-images.githubusercontent.com/59391473/203907074-d7436b9d-d557-46e4-bc9f-bfc6c41fc3fd.png)<br>  
+   
     + **구현**<br>
       selenium을 이용한 크롤링으로 쿠팡 장바구니 속 상품의 정보를 가져옵니다.<br> 
       이때 상품별로 이용자 테이블을  One-to-many의 관계로 생성했습니다.<br>
@@ -126,3 +126,18 @@ permmition class 지정  permmition class 지정
 
     + **6. 2. 2. 로그인 시퀀스 다이어그램**<br>
     <img src=https://user-images.githubusercontent.com/59391473/203673983-2c1ab92b-7674-45dd-9426-b025b2b1d46a.png width="700" height="500"/><br>
+
+## 7. Trouble Shooting
+  ### 7.1 ###
+    + ** 문제 **
+       ![image](https://user-images.githubusercontent.com/59391473/203907074-d7436b9d-d557-46e4-bc9f-bfc6c41fc3fd.png)<br>  
+      + 서로 다른 이용자가 같은 상품을 담았을 때 상품 정보가 중복되어 데이터베이스 낭비가 발생<br>
+      
+    + ** 해결 **
+    
+![image](https://user-images.githubusercontent.com/59391473/204101651-0f42324b-d661-4312-80f7-f6ebe3180aed.png)
+    
+      + 사용자의 장바구니를 주기적으로 크롤링하여 업데이트 하던 방식에서 사용자들의 장바구니에 있는 상품을 url 과 함께 product 모델에 저장했다.<br>
+        이후 상품가격 정보를 업데이트 할 때에는 product의 url로 사이트에 접속하여 정보를 가져올 수 있었다.
+        이용자마다 크롬드라이버를 열어 로그인하고 크롤링하던 과정을 로그인 없이 한번에 할 수 있는 효과도 있었다.
+        
