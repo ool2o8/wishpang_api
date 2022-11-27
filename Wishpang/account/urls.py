@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 
 from account.views import CreateUserViewset, logoutView, loginView
-from account.views import KaKaoSignInCallBackView, KakaoGetLogin, KakaoGetLogout
+from account.views import KaKaoSignInCallBackView, KakaoGetLogin, KakaoGetLogout, CoupangRegister
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
@@ -32,4 +32,5 @@ urlpatterns = [
 
     path('kakao/login', KakaoGetLogin.as_view()),
     path('kakao/login/callback', KaKaoSignInCallBackView.as_view()),
+    path('coupang', CoupangRegister.as_view({'post':'create'})),
 ]

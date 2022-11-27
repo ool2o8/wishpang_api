@@ -1,13 +1,14 @@
 from account.serializer import UserSerializer
-from django.http import JsonResponse
-from django.shortcuts import redirect
+from django.http import JsonResponse, HttpResponse
+from django.shortcuts import redirect, render
+from django.template import loader
 from requests import Response
 from rest_framework import viewsets
 
 from django.contrib.auth.models import User
-from blog.models import Post
-from blog.models import Comment, Wish, Product
-from blog.serializer import PostSerializer, LikeUserSerializer, LikeSerializer, ProductSerializer, WishSerializer, ProductPriceSerializer
+from account.models import Coupang
+from blog.models import Post, Comment, Product, ProductData 
+from blog.serializer import PostSerializer, LikeUserSerializer, LikeSerializer, ProductSerializer, ProductDataSerializer, ProductDataListSerializer
 from blog.serializer import CommentSerializer
 from rest_framework import permissions
 from rest_framework.permissions import BasePermission, IsAuthenticated, SAFE_METHODS
@@ -17,8 +18,6 @@ from rest_framework import status, generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-import time
-import datetime
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -26,7 +25,10 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 
 from django.db.models import Max, Min
+from config.utils import secret
+import json
 
+secrets=secret()
 
 
 class ReadOnly(BasePermission):
@@ -122,115 +124,24 @@ class PostLikeListView(APIView):
         # if post.liker.filter(pk=request.user.pk).exists():
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-class MyWishUpdateView(viewsets.ModelViewSet):
-    authentication_classes = [SessionAuthentication]
-    serializer_class=WishSerializer
-    queryset=Wish.objects.all()
-    def crawling(self, request):
-        options = webdriver.ChromeOptions()
-        # options.add_argument("--disable-blink-features=AutomationControlled")
-        # options.add_experimental_option("excludeSwitches", ["enable-automation"])
-        # options.add_experimental_option("useAutomationExtension", False)
-        options.add_experimental_option(
-            "prefs", {"prfile.managed_default_content_setting.images": 2})
-
-        driver = webdriver.Chrome(service=Service(
-            ChromeDriverManager().install()), options=options)
-        driver.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
-                            "source": """ Object.defineProperty(navigator, 'webdriver', { get: () => undefined }) """})
-        driver.get(r"https://login.coupang.com/login/login.pang?rtnUrl=https%3A%2F%2Fwww.coupang.com%2Fnp%2Fpost%2Flogin%3Fr%3Dhttps%253A%252F%252Fwww.coupang.com%252F")
-
-        driver.implicitly_wait(2)
-        driver.find_element(By.ID, 'login-email-input').send_keys('ncr7804@naver.com')
-        driver.find_element(By.ID, 'login-password-input').send_keys('mijung1208!')
-
-        driver.implicitly_wait(2)
-        driver.find_element(
-            By.CSS_SELECTOR, 'body > div.member-wrapper.member-wrapper--flex > div > div > form > div.login__content.login__content--trigger > button').click()
-
-        driver.implicitly_wait(10)
-        driver.find_element(
-            By.XPATH, """//*[@id="header"]/section/div/ul/li[2]/a""").click()
-
-        driver.implicitly_wait(3)
-
-        elements = driver.find_elements(
-            By.CSS_SELECTOR, '#cartTable-rocket-fresh > tr')
-        for el in elements:
-            if el.get_attribute('class') == 'cart-deal-item':
-                if el.get_attribute('data-item-status') == 'MISSED':
-                    product_name = el.find_element(
-                        By.XPATH, 'td[@class="product-box relative"]/div[@class="product-name-part"]/a').text
-                else:
-                    id = el.find_element(
-                        By.XPATH, 'td[@class="product-box"]/div[@id]').get_attribute('id')
-                    product_name = el.find_element(
-                        By.XPATH, 'td[@class="product-box"]/div[@class="product-name-part"]/a').text
-                    
-                    getprice = el.find_element(
-                        By.XPATH, 'td[@class="unit-total-price"]/div[@class="unit-total-sale-price"]').text
-                    price = 0
-                    for i in getprice:
-                        if i <= '9' and i >= '0':
-                            price = price*10+int(i)
-                    quantity = el.find_element(
-                                    By.XPATH, 'td[@class="product-box"]/div[@id]/div[@class="option-price-part"]/span[@class="select-select"]/select[@class="quantity-select"]').get_attribute('data-quantity')
-                    quantity = int(quantity)
-                    image=el.find_element(By.XPATH, 'td/a/img').get_attribute('src')
-                    res,_ = Product.objects.get_or_create(id=id, name=product_name, image=image)
-                    wish = Wish.objects.create(
-                        product=res, price=price/quantity, time=datetime.datetime.now())
-                    wish.wisher.add(User.objects.get(id=request.user.id))
-        driver.quit()
-    def list(self, request):
-        self.crawling(request)
-        queryset = Product.objects.all()
-        serializer=ProductSerializer(queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-
-class MyWishView(APIView):
-    permission_classes = [IsAuthenticated]
-    authentication_classes = [SessionAuthentication]
-    serializer_class=WishSerializer
-    def get(self, request):
-        queryset = Wish.objects.select_related('product').filter(wisher=request.user.id)
-        serializer=WishSerializer(queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-class WishProductView(viewsets.ModelViewSet):
+class ProductView(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     authentication_classes = [SessionAuthentication]
     serializer_class=ProductSerializer
-    queryset=Wish.objects.all()
+    queryset=Product.objects.all()
     def list(self, request):
         queryset=Product.objects.all()
         serializer=ProductSerializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class WishPriceView(viewsets.ModelViewSet):
+class MyProductUpdate(APIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [SessionAuthentication]
-    serializer_class=WishSerializer
-    queryset=Wish.objects.all()
-    def retrieve(self, request, product_id):
-        queryset=Wish.objects.filter(product__id=product_id).order_by('-price').first()
-        serializer=WishSerializer(queryset)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-class WishPriceListView(viewsets.ModelViewSet):
-    permission_classes=[IsAuthenticated]
-    authentication_classes=[SessionAuthentication]
-    serializer_class=WishSerializer
-    queryset=Product.objects.all()
-    def list(self, request):
-        queryset=Wish.objects.all().values('product_id', 'product__name').annotate(min=Min('price'), max=Max('price'))
-        serializer=WishSerializer(queryset, many=True)
-        return Response(queryset, status=status.HTTP_200_OK)
-
-def crawling(self, request):
+    serializer_class=ProductDataSerializer
+    def get(self, request):
+        coupang=Coupang.objects.get(user=request.user)
+        
         options = webdriver.ChromeOptions()
         options.add_argument("--disable-blink-features=AutomationControlled")
         options.add_experimental_option("excludeSwitches", ["enable-automation"])
@@ -245,8 +156,8 @@ def crawling(self, request):
         driver.get(r"https://login.coupang.com/login/login.pang?rtnUrl=https%3A%2F%2Fwww.coupang.com%2Fnp%2Fpost%2Flogin%3Fr%3Dhttps%253A%252F%252Fwww.coupang.com%252F")
 
         driver.implicitly_wait(2)
-        driver.find_element(By.ID, 'login-email-input').send_keys('ncr7804@naver.com')
-        driver.find_element(By.ID, 'login-password-input').send_keys('mijung1208!')
+        driver.find_element(By.ID, 'login-email-input').send_keys(coupang.username)
+        driver.find_element(By.ID, 'login-password-input').send_keys(coupang.password)
 
         driver.implicitly_wait(2)
         driver.find_element(
@@ -271,18 +182,125 @@ def crawling(self, request):
                         By.XPATH, 'td[@class="product-box"]/div[@id]').get_attribute('id')
                     product_name = el.find_element(
                         By.XPATH, 'td[@class="product-box"]/div[@class="product-name-part"]/a').text
+                    product_link = el.find_element(
+                        By.XPATH, 'td[@class="product-box"]/div[@class="product-name-part"]/a').get_attribute('href')
                     
-                    getprice = el.find_element(
-                        By.XPATH, 'td[@class="unit-total-price"]/div[@class="unit-total-sale-price"]').text
-                    price = 0
-                    for i in getprice:
-                        if i <= '9' and i >= '0':
-                            price = price*10+int(i)
-                    quantity = el.find_element(
-                                    By.XPATH, 'td[@class="product-box"]/div[@id]/div[@class="option-price-part"]/span[@class="select-select"]/select[@class="quantity-select"]').get_attribute('data-quantity')
-                    quantity = int(quantity)
-                    res,_ = Product.objects.get_or_create(id=id, name=product_name)
-                    wish = Wish.objects.create(
-                        product=res, price=price/quantity, time=datetime.datetime.now())
-                    wish.wisher.add(User.objects.get(id=request.user.id))
-   
+                    res,_ = Product.objects.update_or_create(id=id, name=product_name, url=product_link)
+                    res.wisher.add(User.objects.get(id=request.user.id))
+        queryset = Product.objects.all()
+        serializer=ProductSerializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class MyProductDataUpdateView(APIView):
+    authentication_classes = [SessionAuthentication]
+    serializer_class=ProductDataSerializer
+    def get(self, request):
+        from cron import main
+        main()
+        queryset=Product.objects.all()
+        serializer=ProductSerializer(queryset, many=True)  
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class MyProductDataView(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [SessionAuthentication]
+    serializer_class=ProductDataSerializer
+    def get(self, request):
+        queryset = ProductData.objects.select_related('product').filter(wisher=request.user.id)
+        serializer=ProductDataSerializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class ProductDataView(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [SessionAuthentication]
+    serializer_class=ProductDataListSerializer
+    queryset=ProductData.objects.all()
+    def list(self, request, product_id):
+        queryset=ProductData.objects.filter(product_id=product_id).order_by('time').all()
+        serializer=ProductDataListSerializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class GetChartData(APIView):
+    def get(self, request, product_id):
+        datas=ProductData.objects.filter(product_id=product_id).all().order_by('time')
+        data=[i.price for i in datas]
+        context={"data":data}
+        print(data)
+        return JsonResponse()
+
+
+class ChartView(APIView):
+    def get(self, request, product_id):
+        return render(request, 'chart.html')
+
+
+def GetBucket(self, request):
+    options = webdriver.ChromeOptions()
+    options.add_argument("--disable-blink-features=AutomationControlled")
+    options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    options.add_experimental_option("useAutomationExtension", False)
+    options.add_experimental_option(
+        "prefs", {"prfile.managed_default_content_setting.images": 2})
+
+    driver = webdriver.Chrome(service=Service(
+        ChromeDriverManager().install()), options=options)
+    driver.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
+                        "source": """ Object.defineProperty(navigator, 'webdriver', { get: () => undefined }) """})
+    driver.get(r"https://login.coupang.com/login/login.pang?rtnUrl=https%3A%2F%2Fwww.coupang.com%2Fnp%2Fpost%2Flogin%3Fr%3Dhttps%253A%252F%252Fwww.coupang.com%252F")
+
+    driver.implicitly_wait(2)
+    driver.find_element(By.ID, 'login-email-input').send_keys('ncr7804@naver.com')
+    driver.find_element(By.ID, 'login-password-input').send_keys('mijung1208!')
+
+    driver.implicitly_wait(2)
+    driver.find_element(
+        By.CSS_SELECTOR, 'body > div.member-wrapper.member-wrapper--flex > div > div > form > div.login__content.login__content--trigger > button').click()
+
+    driver.implicitly_wait(5)
+    driver.find_element(
+        By.XPATH, """//*[@id="header"]/section/div/ul/li[2]/a""").click()
+
+    driver.implicitly_wait(3)
+
+    elements = driver.find_elements(
+        By.CSS_SELECTOR, '#cartTable-rocket-fresh > tr')
+
+    for el in elements:
+        if el.get_attribute('class') == 'cart-deal-item':
+            if el.get_attribute('data-item-status') == 'MISSED':
+                product_name = el.find_element(
+                    By.XPATH, 'td[@class="product-box relative"]/div[@class="product-name-part"]/a').text
+            else:
+                id = el.find_element(
+                    By.XPATH, 'td[@class="product-box"]/div[@id]').get_attribute('id')
+                product_name = el.find_element(
+                    By.XPATH, 'td[@class="product-box"]/div[@class="product-name-part"]/a').text
+                product_link = el.find_element(
+                    By.XPATH, 'td[@class="product-box"]/div[@class="product-name-part"]/a').get_attribute('href')
+                
+                res,_ = Product.objects.get_or_create(id=id, name=product_name, url=product_link)
+                res.wisher.add(User.objects.get(id=request.user.id))
+
+
+def Update_ProductData(self, request):
+        options = webdriver.ChromeOptions()
+        options.add_argument("--disable-blink-features=AutomationControlled")
+        options.add_experimental_option("excludeSwitches", ["enable-automation"])
+        options.add_experimental_option("useAutomationExtension", False)
+        options.add_experimental_option(
+            "prefs", {"prfile.managed_default_content_setting.images": 2})
+
+        driver = webdriver.Chrome(service=Service(
+            ChromeDriverManager().install()), options=options)
+        driver.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
+                            "source": """ Object.defineProperty(navigator, 'webdriver', { get: () => undefined }) """})
+
+        products=Product.objects.all()
+        for product in products:
+            driver.get(product.url)
+            driver.implicitly_wait(2) 
+            elements=driver.find_elements(By.XPATH, '[@id="contents"]')
+            print(elements)

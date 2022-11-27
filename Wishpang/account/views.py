@@ -19,13 +19,22 @@ from django.core.exceptions import ImproperlyConfigured
 
 from django.http import JsonResponse
 from django.db import models
-from account.models import Profile
+from account.models import Profile, Coupang
 from django.contrib.auth.hashers import make_password
 from rest_framework import serializers
 
 from account.serializer import *
 from django.contrib.auth import authenticate, login, logout
 from config.settings import SECRET_KEY, KAKAO_REST_API_KEY
+
+from rest_framework.permissions import IsAuthenticated, SAFE_METHODS
+from rest_framework.authentication import SessionAuthentication
+from cryptography.fernet import Fernet
+from pathlib import Path
+
+from config.utils import secret
+
+secrets=secret()
 
 class CreateUserViewset(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -115,3 +124,18 @@ class logoutView(View):
     def get(self, request):
         logout(request)
         return redirect('http://127.0.0.1/account/login')
+
+
+class CoupangRegister(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [SessionAuthentication]
+    serializer_class = UserSerializer
+    queryset = Coupang.objects.all()
+    def create(self, request):
+        fernet=Fernet(secrets['HASH_KEY'])
+        Coupang.objects.update_or_create(
+            user=User.objects.get(id=request.user.id),
+            username=request.POST.get('username'),
+            password=request.POST.get('password')
+        )
+        return Response(status=status.HTTP_201_CREATED)
