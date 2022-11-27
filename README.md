@@ -3,10 +3,10 @@
   ### 👧 인력구성
   + 개인프로젝트
   ### 🪄 프로젝트 목적
-  + 쿠팡 상품의 경우 매일 상품의 가격이 달라진다. <br>
-    가격 변동을 한눈에 파악하기 어려워 구매 시기 결정에 어려움이 있다.<br>
-    가격을 기록하여 적절한 시기를 판별할 수 있도록 도움을 주는 api를 제공한다.<br>
-    또한 등록한 상품 중심으로 커뮤니티를 만들어 정보 획득이 쉽게한다. 
+  + 쿠팡 상품의 경우 매일 상품의 가격이 달라집니다. <br>
+    상품 구매 직후 가격이 인하하여 안타까운적이 있습니다.<br>
+    가격 변동 추이를 파악하여 구매하려는 상품의 시세를 보여주어 구매시기 결정에 도움을 줄 수 있습니다. <br>
+    또한 등록한 상품 중심으로 커뮤니티를 만들어 가격정보 이외에 정보를 공유할 수 있습니다. <br>
    ### ⚙️ 환경
    + ``` python3.8 ```
    + **Framework** :Django
@@ -18,8 +18,10 @@
   + **회원가입**<br>
     User 모델의 objects.create_user기능을 이용하여 유효성 검사와 저장을 한번에 수행<br>
   + **로그인 & 로그아웃**<br>
-    + **구현**<br>
-      django.contrib.auth의 authenticate을 이용하여 DB의 회원정보와 대조하여  로그인을 유지합니다.
+    + **detail**<br>
+      django.contrib.auth의 authenticate을 이용하여 DB의 회원정보와 대조하여  로그인을 유지합니다.<br>
+      `login()`  함수를 통해 세션데이터를 데이터베이스의 **세션 테이블**에 저장합니다<br>
+      
       + 접근 권한 관리<br>
         Permission을 커스텀하여 회원과 비회원의 기능을 구분할 수 있습니다.<br>
         SessionAuthentication 을 이용 신원 확인 후 권한을 부여합니다.<br>
@@ -34,38 +36,27 @@
 
   + **쿠팡 장바구니 상품 가격 저장**<br>
     + **ERD**<br>
-   
-    + **구현**<br>
+      <img src=https://user-images.githubusercontent.com/59391473/204123286-7d19c1ca-0955-4da5-8117-a9124cf2c785.png width="500" height="200"/>
+      <img src=https://user-images.githubusercontent.com/59391473/204123271-dbd6c817-b0d4-4ad7-9ff3-5a360cc10916.png width="300" height="250"/>
+    + **detail**<br>
       selenium을 이용한 크롤링으로 쿠팡 장바구니 속 상품의 정보를 가져옵니다.<br> 
-      이때 상품별로 이용자 테이블을  One-to-many의 관계로 생성했습니다.<br>
-      이용자가 같은 상품을 담았을 때에 데이터가 중복되는 문제를 해결하고, <br>
-      상품 정보를 공유하여 메모리를 아낄 수 있었습니다.<br>
-      job에 등록하여 일정 주기마다 크롤러를 작동시켰습니다. <br>
-      세시간에 한번 크롤링하며 하루의 최저 금액을 저장하고 CanvasJS를 이용하여 가격 변동 추이를 시각화 .<br>
+      
+      이용자들의 장바구니 속 상품을 모두 product 테이블에 중복되는 크롤링을 방지했습니다. <br>
+      이때 상품별로 이용자 테이블을  One-to-many의 관계로 생성하여 자신의 장바구니에 담긴 상품만 조회 가능하도록 했습니다.<br>
+      job에 등록하여 3 시간에 한번 크롤링하며 하루의 최저 금액을 저장하고 일별 최저가를 보여줍니다.<br>
 
   + **블로그**<br>
     + **ERD**<br>
-      <img src=https://user-images.githubusercontent.com/59391473/203903745-8ca07e09-2a67-4826-affd-2b6f7f05f844.png width="300" height="250"/>
-      <img src=https://user-images.githubusercontent.com/59391473/203904305-e08db222-32bd-47ac-a024-eee281db7c5f.png width="300" height="250"/>
-      <img src=https://user-images.githubusercontent.com/59391473/203904195-17b3c210-abc4-4d07-bb5b-fe8a889169f5.png width="300" height="250"/><br>
-    + **구현**<br>  
-      댓글 기능<br>
-      post와 comment 를 one-to-many 관계로 생성<br>
-
-      좋아요 기능<br>
-      post 와 liker를 one-to-many 관계로 구현<br>
-      django 의 orm 을 이용하여 유저가 댓글을 달거나 좋아요를 누른 글을 역참조 할수 있음<br>
+      <img src=https://user-images.githubusercontent.com/59391473/204120438-cc95fe4b-114b-4273-aca6-6bf8b067cfd9.png width="300" height="300"/>
+      <img src=https://user-images.githubusercontent.com/59391473/204120494-9f34aaee-8032-42d2-a888-5f1c49996432.png width="300" height="250"/>
+      <img src=https://user-images.githubusercontent.com/59391473/204120533-f7d44137-bbcd-41ec-bc38-458210a016a2.png width="300" height="250"/><br>
+      
+    + **detail**<br>  
+      product 테이블에 있는 상품을 one to one 으로 연결하여 해당 주제의 글을 쓸 수 있습니다.
+      post와 comment, liker를 one-to-many 관계로 구현했습니다<br>
+      django 의 orm 을 이용하여 유저가 댓글을 달거나 좋아요를 누른 글을 역참조 할수 있습니다<br>
 
 
-  <details>
-  <summary>주요코드</summary>
-  <div markdown="1">   
-   ```
-    blah
-   ```
-  </div>
-  </details>
-  
 
 
 ## 3. 사용 기술 
@@ -113,33 +104,52 @@ permmition class 지정  permmition class 지정
 |해당 게시글 댓글 등록|POST|/post/{post_id: int}/comment|
 |해당 게시글 좋아요|GET|/post/{post_id: int}/like|
 |해당 게시글 좋아요 회원 조회|GET|/post/{post_id: int}/like-list|
-|쿠팡 장바구니 상품|GET|/my-wish|
-|쿠팡 장바구니 상품 가격 조회|GET|/wish-price|
-|쿠팡 장바구니 상품 업데이트|GET|/my-wish/update|
+|등록 상품 전체 조회|GET|product|
+|쿠팡 장바구니 업데이트|GET|/product/my|
+|상품 가격 조회|GET|/price/{int:product_id}|
+|Product job init|GET|/product-data/|
 
 
 ## 6. UML 명세🧾🗂
   + **6. 1. 클래스 다이어그램**<br>
-    <img src=https://user-images.githubusercontent.com/59391473/203677507-6b3c0f3f-c783-4cb3-bb4a-e6a733b1ff17.png width="700" height="500"/><br>
+    <img src=https://user-images.githubusercontent.com/59391473/204120205-34ec9d48-9101-4ccc-8e56-1ba19b0e06fd.png width="500" height="700"/><br>
 
 
   + **6. 2 시퀀스 다이어그램**<br>
     + **6. 2. 1. 장바구니 상품 update 시퀀스 다이어그램**<br>
-    <img src=https://user-images.githubusercontent.com/59391473/203673980-6683036e-cd72-482f-953d-cf48655a744d.png width="700" height="500"/><br>
-
+    <img src=https://user-images.githubusercontent.com/59391473/204119067-8cf40224-6da0-4807-84ca-394aeaaa03f2.png width="700" height="500"/><br>
     + **6. 2. 2. 로그인 시퀀스 다이어그램**<br>
-    <img src=https://user-images.githubusercontent.com/59391473/203673983-2c1ab92b-7674-45dd-9426-b025b2b1d46a.png width="700" height="500"/><br>
+    <img src=https://user-images.githubusercontent.com/59391473/203673983-2c1ab92b-7674-45dd-9426-b025b2b1d46a.png width="500" height="400"/><br>
+   
 
-## 7. Trouble Shooting
-  ### 7.1 상품 데이터 중복 이슈
-  **문제**
-   ![image](https://user-images.githubusercontent.com/59391473/203907074-d7436b9d-d557-46e4-bc9f-bfc6c41fc3fd.png)<br>  
-    + 서로 다른 이용자가 같은 상품을 담았을 때 상품 정보가 중복되어 데이터베이스 낭비가 발생<br>
+## 7. Trouble Shooting ✨
+  <details>
+  <summary>상품 데이터 중복 이슈</summary>
+  <div markdown="1">   
+  서로 다른 이용자가 같은 상품을 담았을 때 상품 정보가 중복되어 데이터베이스 낭비가 발생<br>
 
-  **해결**
-   ![image](https://user-images.githubusercontent.com/59391473/204101651-0f42324b-d661-4312-80f7-f6ebe3180aed.png)
-    + 사용자의 장바구니를 주기적으로 크롤링하여 업데이트 하던 방식에서 사용자들의 장바구니에 있는 상품을 url 과 함께 product 모델에 저장했다.<br>
-      이후 상품가격 정보를 업데이트 할 때에는 product의 url로 사이트에 접속하여 정보를 가져올 수 있었다.
-      이용자마다 크롬드라이버를 열어 로그인하고 크롤링하던 과정을 로그인 없이 한번에 할 수 있는 효과도 있었다.
-  ### 7.2 CanvasJS 데이터 포맷 이슈
+  product 모델에 url 속성을 추가하여 상품 당 한번만 정보를 가져옴.<br>
+  사용자의 장바구니를 주기적으로 크롤링하여 업데이트 -> product 모델을 주기적으로 크롤링 <br>
+  로그인을 생략한 크롤링으로 실행시간을 줄이고, 데이터 중복을 방지 함<br>
+  </div>
+  </details>
+  
+  <details>
+  <summary>주기적 실행</summary>
+  <div markdown="1">   
+  ```crontab``` 과 ```background_task``` 를 이용하여 구현 했으나, django 3버전부터 지원하지 않는 문제가 발생 <br>
+  ```apscheduler``` 로 대체하여 해당 url 로 접근 시 주기적으로 크롤링 시작<br>
+  </div>
+  </details>
+  
+  <details>
+  <summary>queryset 을 리스트로 가져올 때에 발생한 이슈</summary>
+  <div markdown="1">   
+  filter 를 통해 가져오는 object 가 두개 이상일 때 serializer에서 queryset 값을 찾지 못함 <br>
+  serializer 에서 `many=True` 값을 주어 해결 <br>
+  </div>
+  </details>
+
+  
+
 
