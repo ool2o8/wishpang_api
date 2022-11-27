@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from blog.models import Post, Product, Wish
+from blog.models import Post, Product, ProductData
 from blog.models import Comment
 from account.serializer import UserSerializer
 from django.contrib.auth.models import User
@@ -25,7 +25,7 @@ class PostSerializer(serializers.ModelSerializer):
     liker=LikeUserSerializer(many=True, read_only=True)
     class Meta:
         model = Post
-        fields = ("id", "title", "auth", "created", "updated", "contents", "liker", "comment")
+        fields = ("id", "title", "auth", "created", "updated", "contents", "liker", "comment", "product")
 
 
 class LikeSerializer(serializers.Serializer):
@@ -35,15 +35,14 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model=Product
         fields="__all__"
-        
-class WishSerializer(serializers.ModelSerializer):
-    product=ProductSerializer(read_only=True)
-    class Meta:
-        model=Wish
-        fields="__all__"
 
-class ProductPriceSerializer(serializers.ModelSerializer):
-    wish=WishSerializer()
+class ProductDataSerializer(serializers.ModelSerializer):
     class Meta:
-        model=Product
+        model=ProductData
+        fields="__all__"
+        
+class ProductDataListSerializer(serializers.ModelSerializer):
+    productData=ProductDataSerializer(many=True, read_only=True)
+    class Meta:
+        model=ProductData
         fields="__all__"

@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from blog.views import PostViewSet, UserPostView, CommentViewSet, PostLikeView, PostLikeListView, MyWishView, MyWishUpdateView, WishProductView, WishPriceView, WishPriceListView
+from blog.views import PostViewSet, UserPostView, CommentViewSet, PostLikeView, PostLikeListView, ProductView, MyProductUpdate, ProductDataView, MyProductDataUpdateView, GetChartData, ChartView
 
 urlpatterns = [
     path('post',  PostViewSet.as_view({'get': 'list', 'post': 'create'})),
@@ -24,14 +24,12 @@ urlpatterns = [
     path('user-post', UserPostView.as_view()),
 
     path('post/<int:pk>/comment',
-         CommentViewSet.as_view({'get': 'list', 'post': 'create'})),
+         CommentViewSet.as_view()),
     path('post/<int:post_pk>/like', PostLikeView.as_view()),
     path('post/<int:post_pk>/like-list',
-         PostLikeListView.as_view({'get': 'list'})),
-    path('my-wish', MyWishView.as_view({'get': 'list'})),
-    path('my-wish/update', MyWishUpdateView.as_view({'get':'list'})),
-    path('wish-product', WishProductView.as_view({'get':'list'})),
-    path('wish-price', WishPriceListView.as_view({'get':'list'})),
-    path('wish-price/<int:product_id>', WishPriceView.as_view({'get':'retrieve'}))
-    
-]
+         PostLikeListView.as_view()),
+    path('product', ProductView.as_view({'get':'list'})),
+    path('product/my', MyProductUpdate.as_view()),
+    path('product/<int:product_id>', ProductDataView.as_view({'get':'list'})),
+    path('product-data', MyProductDataUpdateView.as_view()),
+    ]

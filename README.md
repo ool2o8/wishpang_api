@@ -120,7 +120,7 @@ permmition class 지정  permmition class 지정
     <img src=https://user-images.githubusercontent.com/59391473/204119067-8cf40224-6da0-4807-84ca-394aeaaa03f2.png width="700" height="500"/><br>
     + **6. 2. 2. 로그인 시퀀스 다이어그램**<br>
     <img src=https://user-images.githubusercontent.com/59391473/203673983-2c1ab92b-7674-45dd-9426-b025b2b1d46a.png width="500" height="400"/><br>
-   
+
 
 ## 7. Trouble Shooting ✨
   <details>
@@ -133,7 +133,7 @@ permmition class 지정  permmition class 지정
   로그인을 생략한 크롤링으로 실행시간을 줄이고, 데이터 중복을 방지 함<br>
   </div>
   </details>
-  
+
   <details>
   <summary>주기적 실행</summary>
   <div markdown="1">   
@@ -149,7 +149,4 @@ permmition class 지정  permmition class 지정
   serializer 에서 `many=True` 값을 주어 해결 <br>
   </div>
   </details>
-
   
-
-
