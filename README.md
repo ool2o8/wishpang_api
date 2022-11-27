@@ -10,8 +10,8 @@
    ### ⚙️ 환경
    + ``` python3.8 ```
    + **Framework** :Django
-   + **Database** : sqlite | RDB-Mysql
-   + **OS** : window | EC2-Linux
+   + **Database** : sqlite 
+   + **OS** : window 
   
  
 ## 2. 기능
