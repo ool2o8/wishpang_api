@@ -9,12 +9,35 @@
     또한 등록한 상품 중심으로 커뮤니티를 만들어 가격정보 이외에 정보를 공유할 수 있습니다. <br>
    ### ⚙️ 환경
    + ``` python3.8 ```
-   + **Framework** :Django
-   + **Database** : sqlite 
-   + **OS** : window 
-  
+   + **Framework** :Django4
+   + **Database** : sqlite | RDB - Mysql
+   + **OS** : window | EC2 - linux(Ubunut20.04)
+
+## 2. 사용 기술 
+  + **2. 1. stack 🔧**<br>
+    + <img src="https://img.shields.io/badge/Django-092E20?style=flat&logo=Django&logoColor=white"/><img src="https://img.shields.io/badge/Mysql-4479A1?style=flat&logo=Mysql&logoColor=white"/><img src="https://img.shields.io/badge/SQlite-003B57?style=flat&logo=SQLite&logoColor=white"/>
+<img src="https://img.shields.io/badge/AmazonEC2-FF9900?style=flat&logo=AmazonEC2&logoColor=white"/><img src="https://img.shields.io/badge/Gunicorn-499848?style=flat&logo=Gunicorn&logoColor=white"/><img src="https://img.shields.io/badge/Python-3776AB?style=flat&logo=Python&logoColor=white"/><img src="https://img.shields.io/badge/NGINX-009639?style=flat&logo=NGINX&logoColor=white"/>
+
+  + **2. 2.  tool ⚙**<br>
+    + <img src="https://img.shields.io/badge/VisualStudio-5C2D91?style=flat&logo=VisualStudio&logoColor=white"/><img src="https://img.shields.io/badge/Github-181717?style=flat&logo=Github&logoColor=white"/>
+
+## 3. 개발일지 🗓📆
+* 2022.06.26 개발환경 셋팅, 장고 앱 생성
+* 2022.07.04 DRF-simplejwt로 로그인 구현 
+>(django v ersion4 이상에서는 DRF-jwt X)
+* 2022.07.05 kakao login api 연결 (account\login view 작성)
+* 2022.07.06 kakao login 유저 정보 불러오기->회원가입에 이용
+* 2022.07.07 User 모델 확장- OneToOne profile 모델 생성, 비밀번호 해싱, 패키징 관리
+* 2022.07.08 ~ 9 session authentication으로 로그인, 
+* 2022.07.26 Wishpang 프로젝트 - 쿠팡 장바구니 상품 가격비교, 백그라운드 함수 호출 구현 중
+permmition class 지정  permmition class 지정
+* 2022-07-27 상품 가격 비교 뷰 작성 -ing
+* 2022-07-28 상품 최저가 필터링
+* 2022-07-31 aws rds 데이터 베이스 연결
+* 2022-09. rds, ec2 연결 해제
+* 2022-12. 상품정 리팩토링
  
-## 2. 기능
+## 4. 기능
   + **회원가입**<br>
     User 모델의 objects.create_user기능을 이용하여 유효성 검사와 저장을 한번에 수행<br>
   + **로그인 & 로그아웃**<br>
@@ -57,31 +80,6 @@
       django 의 orm 을 이용하여 유저가 댓글을 달거나 좋아요를 누른 글을 역참조 할수 있습니다<br>
 
 
-
-
-## 3. 사용 기술 
-  + **3. 1. stack 🔧**<br>
-    + <img src="https://img.shields.io/badge/Django-092E20?style=flat&logo=Django&logoColor=white"/><img src="https://img.shields.io/badge/Mysql-4479A1?style=flat&logo=Mysql&logoColor=white"/><img src="https://img.shields.io/badge/SQlite-003B57?style=flat&logo=SQLite&logoColor=white"/>
-<img src="https://img.shields.io/badge/AmazonEC2-FF9900?style=flat&logo=AmazonEC2&logoColor=white"/><img src="https://img.shields.io/badge/Gunicorn-499848?style=flat&logo=Gunicorn&logoColor=white"/><img src="https://img.shields.io/badge/Python-3776AB?style=flat&logo=Python&logoColor=white"/><img src="https://img.shields.io/badge/NGINX-009639?style=flat&logo=NGINX&logoColor=white"/>
-
-  + **3. 2.  tool ⚙**<br>
-    + <img src="https://img.shields.io/badge/VisualStudio-5C2D91?style=flat&logo=VisualStudio&logoColor=white"/><img src="https://img.shields.io/badge/Github-181717?style=flat&logo=Github&logoColor=white"/>
-
-## 4. 개발 🗓📆
-* 2022.06.26 개발환경 셋팅, 장고 앱 생성
-* 2022.07.04 DRF-simplejwt로 로그인 구현 
->(django v ersion4 이상에서는 DRF-jwt X)
-* 2022.07.05 kakao login api 연결 (account\login view 작성)
-* 2022.07.06 kakao login 유저 정보 불러오기->회원가입에 이용
-* 2022.07.07 User 모델 확장- OneToOne profile 모델 생성, 비밀번호 해싱, 패키징 관리
-* 2022.07.08 ~ 9 session authentication으로 로그인, 
-* 2022.07.26 Wishpang 프로젝트 - 쿠팡 장바구니 상품 가격비교, 백그라운드 함수 호출 구현 중
-permmition class 지정  permmition class 지정
-* 2022-07-27 상품 가격 비교 뷰 작성 -ing
-* 2022-07-28 상품 최저가 필터링
-* 2022-07-31 aws rds 데이터 베이스 연결
-
-
 ## 5. URL 명세
   + **5. 1. /account**
 
@@ -121,7 +119,6 @@ permmition class 지정  permmition class 지정
     + **6. 2. 2. 로그인 시퀀스 다이어그램**<br>
     <img src=https://user-images.githubusercontent.com/59391473/203673983-2c1ab92b-7674-45dd-9426-b025b2b1d46a.png width="500" height="400"/><br>
 
-
 ## 7. Trouble Shooting ✨
   <details>
   <summary>상품 데이터 중복 이슈</summary>
@@ -141,12 +138,35 @@ permmition class 지정  permmition class 지정
   ```apscheduler``` 로 대체하여 해당 url 로 접근 시 주기적으로 크롤링 시작<br>
   </div>
   </details>
+   <details>
+  <summary>EC2 CPU 성능</summary>
+  <div markdown="1">   
+  EC2에서 가장 작은 micro 인스턴스를 선택해 배포했는데 서버의 성능이 너무 느리려 크롤링을 하는데 문제가 발생했다.<br>
+  cpu 메모리 용량이 더 큰 medium 인스턴스로 재 가동했다.<br>
+  </div>
+  </details>
   
   <details>
   <summary>queryset 을 리스트로 가져올 때에 발생한 이슈</summary>
   <div markdown="1">   
   filter 를 통해 가져오는 object 가 두개 이상일 때 serializer에서 queryset 값을 찾지 못함 <br>
   serializer 에서 `many=True` 값을 주어 해결 <br>
+  </div>
+  </details>
+  
+  <details>
+  <summary>AWS 비용 이슈</summary>
+  <div markdown="1">   
+  한달 간 ec2와 RDS를 구동했더니 5만원이 넘는 비용이 청구되었다.
+  EC2 보다는 RDS의 영향이 큰것으로 보인다. 
+  둘 모두의 인스턴스를 종료했다.
+  </div>
+  </details>
+   <details>
+  <summary>secrte_key 보안</summary>
+  <div markdown="1">   
+  로그인과 회원가입에 쓰이는 secret키를 앱 내에 두고 배포하면 보안문제가 발생한다.<br>
+  secrets.json 파일을 만들어 secret 키 등을 넣어 배포했다.<br>
   </div>
   </details>
   
