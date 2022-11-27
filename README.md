@@ -80,3 +80,73 @@ permmition class 지정  permmition class 지정
 * 2022-07-27 상품 가격 비교 뷰 작성 -ing
 * 2022-07-28 상품 최저가 필터링
 * 2022-07-31 aws rds 데이터 베이스 연결
+
+
+## 5. URL 명세
+  + **5. 1. /account**
+
+|CRUD|HTTP|URL|
+|---|---|---|
+|로그인|POST|/login|
+|로그아웃|GET|/logout|
+|회원가입|POST|/register|
+|카카오 회원가입|GET|/kakao/login|
+
+  + **5. 2. /blog**
+
+|CRUD|HTTP|URL|
+|---|---|---|
+|게시글 조회|GET|/post|
+|게시글 등록|POST|/post|
+|특정 게시글 조회|GET|/post/{post_id: int}|
+|내 게시글 조회|GET|/user-post|
+|해당 게시글 댓글 조회|GET|/post/{post_id: int}/comment|
+|해당 게시글 댓글 등록|POST|/post/{post_id: int}/comment|
+|해당 게시글 좋아요|GET|/post/{post_id: int}/like|
+|해당 게시글 좋아요 회원 조회|GET|/post/{post_id: int}/like-list|
+|등록 상품 전체 조회|GET|product|
+|쿠팡 장바구니 업데이트|GET|/product/my|
+|상품 가격 조회|GET|/price/{int:product_id}|
+|Product job init|GET|/product-data/|
+
+
+## 6. UML 명세🧾🗂
+  + **6. 1. 클래스 다이어그램**<br>
+    <img src=https://user-images.githubusercontent.com/59391473/204120205-34ec9d48-9101-4ccc-8e56-1ba19b0e06fd.png width="500" height="700"/><br>
+
+
+  + **6. 2 시퀀스 다이어그램**<br>
+    + **6. 2. 1. 장바구니 상품 update 시퀀스 다이어그램**<br>
+    <img src=https://user-images.githubusercontent.com/59391473/204119067-8cf40224-6da0-4807-84ca-394aeaaa03f2.png width="700" height="500"/><br>
+    + **6. 2. 2. 로그인 시퀀스 다이어그램**<br>
+    <img src=https://user-images.githubusercontent.com/59391473/203673983-2c1ab92b-7674-45dd-9426-b025b2b1d46a.png width="500" height="400"/><br>
+
+
+## 7. Trouble Shooting ✨
+  <details>
+  <summary>상품 데이터 중복 이슈</summary>
+  <div markdown="1">   
+  서로 다른 이용자가 같은 상품을 담았을 때 상품 정보가 중복되어 데이터베이스 낭비가 발생<br>
+
+  product 모델에 url 속성을 추가하여 상품 당 한번만 정보를 가져옴.<br>
+  사용자의 장바구니를 주기적으로 크롤링하여 업데이트 -> product 모델을 주기적으로 크롤링 <br>
+  로그인을 생략한 크롤링으로 실행시간을 줄이고, 데이터 중복을 방지 함<br>
+  </div>
+  </details>
+
+  <details>
+  <summary>주기적 실행</summary>
+  <div markdown="1">   
+  ```crontab``` 과 ```background_task``` 를 이용하여 구현 했으나, django 3버전부터 지원하지 않는 문제가 발생 <br>
+  ```apscheduler``` 로 대체하여 해당 url 로 접근 시 주기적으로 크롤링 시작<br>
+  </div>
+  </details>
+  
+  <details>
+  <summary>queryset 을 리스트로 가져올 때에 발생한 이슈</summary>
+  <div markdown="1">   
+  filter 를 통해 가져오는 object 가 두개 이상일 때 serializer에서 queryset 값을 찾지 못함 <br>
+  serializer 에서 `many=True` 값을 주어 해결 <br>
+  </div>
+  </details>
+  
