@@ -17,6 +17,7 @@
   + **2. 1. stack 🔧**<br>
     + <img src="https://img.shields.io/badge/Python-3776AB?style=flat&logo=Python&logoColor=white"/>
       <img src="https://img.shields.io/badge/Django-092E20?style=flat&logo=Django&logoColor=white"/>
+      <img src="https://img.shields.io/badge/Selenium-43B02A?style=flat&logo=Selenium&logoColor=white"/>
       <img src="https://img.shields.io/badge/SQlite-003B57?style=flat&logo=SQLite&logoColor=white"/><br>
       
       <img src="https://img.shields.io/badge/Mysql-4479A1?style=flat&logo=Mysql&logoColor=white"/>
