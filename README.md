@@ -125,7 +125,7 @@ permmition class 지정  permmition class 지정
       
     + **detail**<br>  
       product 테이블에 있는 상품을 one to one 으로 연결하여 해당 주제의 글을 쓸 수 있습니다.
-      post와 comment, liker를 one-to-many 관계로 구현했습니다<br>
+      post와 comment, liker를 many-to-many 관계로 구현했습니다<br>
       django 의 orm 을 이용하여 유저가 댓글을 달거나 좋아요를 누른 글을 역참조 할수 있습니다<br>
 
 
