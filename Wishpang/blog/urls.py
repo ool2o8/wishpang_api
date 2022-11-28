@@ -15,21 +15,21 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from blog.views import PostViewSet, UserPostView, CommentViewSet, PostLikeView, PostLikeListView, ProductView, MyProductUpdate, ProductDataView, MyProductDataUpdateView, GetChartData, ChartView
+from blog.views import PostViewSet, UserPostView, CommentViewSet, PostLikeView, PostLikeListView, MyProductView, MyProductUpdate, ProductDataView, MyProductDataUpdateView
 
 urlpatterns = [
-    path('post',  PostViewSet.as_view({'get': 'list', 'post': 'create'})),
-    path('post/<int:pk>', PostViewSet.as_view({'get': 'retrieve'})),
+    path('posts',  PostViewSet.as_view({'get': 'list', 'post': 'create'})),
+    path('posts/<int:pk>', PostViewSet.as_view({'get': 'retrieve'})),
 
-    path('user-post', UserPostView.as_view()),
+    path('user-posts', UserPostView.as_view()),
 
-    path('post/<int:pk>/comment',
+    path('posts/<int:pk>/comment',
          CommentViewSet.as_view()),
-    path('post/<int:post_pk>/like', PostLikeView.as_view()),
-    path('post/<int:post_pk>/like-list',
+    path('posts/<int:post_pk>/like', PostLikeView.as_view()),
+    path('posts/<int:post_pk>/like-list',
          PostLikeListView.as_view()),
-    path('product', ProductView.as_view({'get':'list'})),
-    path('product/my', MyProductUpdate.as_view()),
+    path('bucket', MyProductUpdate.as_view()),
+    path('product/my', MyProductView.as_view({'get':'get'})),
     path('product/<int:product_id>', ProductDataView.as_view({'get':'list'})),
-    path('product-data', MyProductDataUpdateView.as_view()),
+    path('product-data', MyProductDataUpdateView.as_view()),#상품 업데이트
     ]
