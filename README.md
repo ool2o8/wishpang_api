@@ -93,6 +93,29 @@ permmition class 지정  permmition class 지정
       이용자들의 장바구니 속 상품을 모두 product 테이블에 중복되는 크롤링을 방지했습니다. <br>
       이때 상품별로 이용자 테이블을  One-to-many의 관계로 생성하여 자신의 장바구니에 담긴 상품만 조회 가능하도록 했습니다.<br>
       job에 등록하여 3 시간에 한번 크롤링하며 하루의 최저 금액을 저장하고 일별 최저가를 보여줍니다.<br>
+      
+    + **상품 정보 쿼리 최적화**
+      + `product` 의 `wisher` 로 장바구니에 등록 된 상품인지 판별한다. <br>
+         이때 `product` 에서 `wisher`를 정참조 하기 대문에 `select_related`로 캐싱하여 쿼리를 줄일 수 있다.<br>
+      + **소스코드 예제**
+        ```python
+        class MyProductDataView(APIView):
+        permission_classes = [IsAuthenticated]
+        authentication_classes = [SessionAuthentication]
+        serializer_class=ProductDataSerializer
+        def get(self, request):
+            queryset = ProductData.objects.select_related('wisher').filter(wisher=request.user.id)
+            serializer=ProductDataSerializer(queryset, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        ```
+      + **변경 전**
+      <img src=https://user-images.githubusercontent.com/59391473/204297520-7e8a1cdc-5c1a-4b34-8c2b-605ddaabe80f.png width="1000" height="300"/><br>
+      <br>
+      
+      + **변경 후**
+      <img src=https://user-images.githubusercontent.com/59391473/204297082-4bcaac23-279b-4c0a-8a10-739df0bdc41d.png width="1000" height="250"/><br>
+      <br>
+        objects를 하나하나 가져오던 방식에서 한번에 가져오는 방식으로 바뀜
 
   + **블로그**<br>
     + **ERD**<br>
