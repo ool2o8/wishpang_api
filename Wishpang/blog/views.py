@@ -124,13 +124,13 @@ class PostLikeListView(APIView):
         # if post.liker.filter(pk=request.user.pk).exists():
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-class ProductView(viewsets.ModelViewSet):
+class MyProductView(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     authentication_classes = [SessionAuthentication]
     serializer_class=ProductSerializer
     queryset=Product.objects.all()
-    def list(self, request):
-        queryset=Product.objects.all()
+    def get(self, request):
+        queryset=Product.objects.prefetch_related('wisher').all()
         serializer=ProductSerializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -141,7 +141,6 @@ class MyProductUpdate(APIView):
     serializer_class=ProductDataSerializer
     def get(self, request):
         coupang=Coupang.objects.get(user=request.user)
-        
         options = webdriver.ChromeOptions()
         options.add_argument("--disable-blink-features=AutomationControlled")
         options.add_experimental_option("excludeSwitches", ["enable-automation"])
@@ -208,7 +207,7 @@ class MyProductDataView(APIView):
     authentication_classes = [SessionAuthentication]
     serializer_class=ProductDataSerializer
     def get(self, request):
-        queryset = ProductData.objects.select_related('product').filter(wisher=request.user.id)
+        queryset = ProductData.objects.filter(wisher=request.user.id)
         serializer=ProductDataSerializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -222,19 +221,6 @@ class ProductDataView(viewsets.ModelViewSet):
         queryset=ProductData.objects.filter(product_id=product_id).order_by('time').all()
         serializer=ProductDataListSerializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
-class GetChartData(APIView):
-    def get(self, request, product_id):
-        datas=ProductData.objects.filter(product_id=product_id).all().order_by('time')
-        data=[i.price for i in datas]
-        context={"data":data}
-        print(data)
-        return JsonResponse()
-
-
-class ChartView(APIView):
-    def get(self, request, product_id):
-        return render(request, 'chart.html')
 
 
 def GetBucket(self, request):

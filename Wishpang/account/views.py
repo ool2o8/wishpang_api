@@ -59,7 +59,7 @@ class loginView(viewsets.ModelViewSet):
             'username'), password=request.POST.get('password'))
         if user is not None:
             login(request, user)
-            return redirect("http://127.0.0.1/blog/post")
+            return redirect("http://127.0.0.1/blog/posts")
         else:
             return redirect("http://127.0.0.1/account/register")
         
@@ -107,7 +107,7 @@ class KaKaoSignInCallBackView(APIView):
             request, username=user_info["id"], password=user_info["properties"]["nickname"])
         if user is not None:
             login(request, user)
-        return redirect('http://127.0.0.1/blog/post')
+        return redirect('http://127.0.0.1/blog/posts')
 
 
 class KakaoGetLogout(View):
