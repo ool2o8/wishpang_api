@@ -30,8 +30,7 @@
 
 ## 3. 개발일지 🗓📆
 * 2022.06.26 개발환경 셋팅, 장고 앱 생성
-* 2022.07.04 DRF-simplejwt로 로그인 구현 
->(django v ersion4 이상에서는 DRF-jwt X)
+* 2022.07.04 DRF-JWT를 이용한 로그인 구현 중 (추후 django4 에서 jwt를 지원하지 않아 세션로그인으로 변경) 
 * 2022.07.05 kakao login api 연결 (account\login view 작성)
 * 2022.07.06 kakao login 유저 정보 불러오기->회원가입에 이용
 * 2022.07.07 User 모델 확장- OneToOne profile 모델 생성, 비밀번호 해싱, 패키징 관리
@@ -42,15 +41,34 @@ permmition class 지정  permmition class 지정
 * 2022-07-28 상품 최저가 필터링
 * 2022-07-31 aws rds 데이터 베이스 연결
 * 2022-09. rds, ec2 연결 해제
-* 2022-12. 상품정 리팩토링
+* 2022-12. 상품정보 리팩토링
  
 ## 4. 기능
   + **회원가입**<br>
-    User 모델의 objects.create_user기능을 이용하여 유효성 검사와 저장을 한번에 수행<br>
+    User 모델의 objects.create_user기능을 이용하여 유효성 검사와 저장을 한번에 수행합니다. <br>
   + **로그인 & 로그아웃**<br>
-    + **detail**<br>
-      django.contrib.auth의 authenticate을 이용하여 DB의 회원정보와 대조하여  로그인을 유지합니다.<br>
-      `login()`  함수를 통해 세션데이터를 데이터베이스의 **세션 테이블**에 저장합니다<br>
+    + **로그인 시퀀스 다이어그램**<br>
+      <img src=https://user-images.githubusercontent.com/59391473/203673983-2c1ab92b-7674-45dd-9426-b025b2b1d46a.png width="500" height="400"/><br>
+      <br>
+    + **코드**
+    
+    ```python
+    class loginView(viewsets.ModelViewSet):
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
+    def create(self, request):
+        serializer = UserSerializer(request.POST)
+        user = authenticate(request, username=request.POST.get(       //django.contrib.auth의 `authenticate`을 이용하여 신원을 확인하고 반환
+            'username'), password=request.POST.get('password'))
+        if user is not None:
+            login(request, user)                                      //반환된 유저가 있다면 `login()` 함수를 통해 세션 테이블에 저장하고 로그인 유지
+            return redirect("http://127.0.0.1/blog/post")
+        else:
+            return redirect("http://127.0.0.1/account/register")
+     ```
+    + 'django.contrib.auth'의 'logout'를 이용해 세션 데이터를 삭제하고 로그아웃할 수 있습니다.
+    + **카카오 로그인 시퀀스 다이어그램**<br>
+    <img src=https://user-images.githubusercontent.com/59391473/204266712-ef926729-d63e-4970-b818-6d6044b1ebe1.png width="550" height="400"/><br>
       
       + 접근 권한 관리<br>
         Permission을 커스텀하여 회원과 비회원의 기능을 구분할 수 있습니다.<br>
@@ -68,7 +86,8 @@ permmition class 지정  permmition class 지정
     + **ERD**<br>
       <img src=https://user-images.githubusercontent.com/59391473/204123286-7d19c1ca-0955-4da5-8117-a9124cf2c785.png width="500" height="200"/>
       <img src=https://user-images.githubusercontent.com/59391473/204123271-dbd6c817-b0d4-4ad7-9ff3-5a360cc10916.png width="300" height="250"/>
-    + **detail**<br>
+    + **장바구니 상품 update 시퀀스 다이어그램**<br>
+    <img src=https://user-images.githubusercontent.com/59391473/204119067-8cf40224-6da0-4807-84ca-394aeaaa03f2.png width="700" height="500"/><br>
       selenium을 이용한 크롤링으로 쿠팡 장바구니 속 상품의 정보를 가져옵니다.<br> 
       
       이용자들의 장바구니 속 상품을 모두 product 테이블에 중복되는 크롤링을 방지했습니다. <br>
@@ -101,12 +120,12 @@ permmition class 지정  permmition class 지정
 
 |CRUD|HTTP|URL|
 |---|---|---|
-|게시글 조회|GET|/post|
-|게시글 등록|POST|/post|
-|특정 게시글 조회|GET|/post/{post_id: int}|
-|내 게시글 조회|GET|/user-post|
-|해당 게시글 댓글 조회|GET|/post/{post_id: int}/comment|
-|해당 게시글 댓글 등록|POST|/post/{post_id: int}/comment|
+|게시글 조회|GET|/posts|
+|게시글 등록|POST|/posts|
+|특정 게시글 조회|GET|/posts/{post_id: int}|
+|내 게시글 조회|GET|/user-posts|
+|해당 게시글 댓글 조회|GET|/posts/{post_id: int}/comment|
+|해당 게시글 댓글 등록|POST|/posts/{post_id: int}/comment|
 |해당 게시글 좋아요|GET|/post/{post_id: int}/like|
 |해당 게시글 좋아요 회원 조회|GET|/post/{post_id: int}/like-list|
 |등록 상품 전체 조회|GET|product|
@@ -118,31 +137,23 @@ permmition class 지정  permmition class 지정
 ## 6. UML 명세🧾🗂
   + **6. 1. 클래스 다이어그램**<br>
     <img src=https://user-images.githubusercontent.com/59391473/204120205-34ec9d48-9101-4ccc-8e56-1ba19b0e06fd.png width="500" height="700"/><br>
-
-
-  + **6. 2 시퀀스 다이어그램**<br>
-    + **6. 2. 1. 장바구니 상품 update 시퀀스 다이어그램**<br>
-    <img src=https://user-images.githubusercontent.com/59391473/204119067-8cf40224-6da0-4807-84ca-394aeaaa03f2.png width="700" height="500"/><br>
-    + **6. 2. 2. 로그인 시퀀스 다이어그램**<br>
-    <img src=https://user-images.githubusercontent.com/59391473/203673983-2c1ab92b-7674-45dd-9426-b025b2b1d46a.png width="500" height="400"/><br>
-
 ## 7. Trouble Shooting ✨
   <details>
   <summary>상품 데이터 중복 이슈</summary>
   <div markdown="1">   
-  서로 다른 이용자가 같은 상품을 담았을 때 상품 정보가 중복되어 데이터베이스 낭비가 발생<br>
+  서로 다른 이용자가 같은 상품을 담았을 때 상품 정보가 중복되어 데이터베이스 낭비가 발생했다.<br>
 
-  product 모델에 url 속성을 추가하여 상품 당 한번만 정보를 가져옴.<br>
+  product 모델에 url 속성을 추가하여 상품 당 한번만 정보를 가져오도록 변경했다. <br>
   사용자의 장바구니를 주기적으로 크롤링하여 업데이트 -> product 모델을 주기적으로 크롤링 <br>
-  로그인을 생략한 크롤링으로 실행시간을 줄이고, 데이터 중복을 방지 함<br>
+  로그인을 생략한 크롤링으로 실행시간을 줄이고, 데이터 중복을 방지 할 수 있었다.<br>
   </div>
   </details>
 
   <details>
   <summary>주기적 실행</summary>
   <div markdown="1">   
-  ```crontab``` 과 ```background_task``` 를 이용하여 구현 했으나, django 3버전부터 지원하지 않는 문제가 발생 <br>
-  ```apscheduler``` 로 대체하여 해당 url 로 접근 시 주기적으로 크롤링 시작<br>
+  ```crontab``` 과 ```background_task``` 를 이용하여 구현 했으나, django 3버전부터 지원하지 않는 문제가 발생했다. <br>
+  ```apscheduler``` 로 대체하여 해당 url 로 접근 시 주기적으로 크롤링 시작하는 방법으로 변경했다.<br>
   </div>
   </details>
    <details>
@@ -156,8 +167,8 @@ permmition class 지정  permmition class 지정
   <details>
   <summary>queryset 을 리스트로 가져올 때에 발생한 이슈</summary>
   <div markdown="1">   
-  filter 를 통해 가져오는 object 가 두개 이상일 때 serializer에서 queryset 값을 찾지 못함 <br>
-  serializer 에서 `many=True` 값을 주어 해결 <br>
+  filter 를 통해 가져오는 object 가 두개 이상일 때 serializer에서 queryset 값을 찾지 못했다. <br>
+  serializer 에서 `many=True` 값을 주어 해결했다. <br>
   </div>
   </details>
   
@@ -174,6 +185,7 @@ permmition class 지정  permmition class 지정
   <div markdown="1">   
   로그인과 회원가입에 쓰이는 secret키를 앱 내에 두고 배포하면 보안문제가 발생한다.<br>
   secrets.json 파일을 만들어 secret 키 등을 넣어 배포했다.<br>
+  값을 가져오는 utils.py 파일을 만들고 다른 파일에서 import 하여 사용할 수 있다.<br>
   </div>
   </details>
   
