@@ -22,7 +22,7 @@ from .settings import MEDIA_ROOT, MEDIA_URL
 
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('blog/', include('blog.urls')),
-    path('account/', include('account.urls')),
+    path('admin', admin.site.urls),
+    path('blog', include('blog.urls')),
+    path('account', include('account.urls')),
 ]+ static(MEDIA_URL, document_root = MEDIA_ROOT)

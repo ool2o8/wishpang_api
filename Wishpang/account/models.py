@@ -1,6 +1,5 @@
-from django.forms import CharField
-from django.utils import timezone
-from django.contrib.auth.models import AbstractUser, User, BaseUserManager
+
+from django.contrib.auth.models import User
 from django.db import models
 
 
